@@ -6,8 +6,9 @@ use libc::{c_int, c_void};
 use nix::sys::signal::{SigSet, SigmaskHow};
 use nix::unistd::{Uid, User};
 use pam_sys::{
-    PAM_SUCCESS, pam_acct_mgmt, pam_authenticate, pam_close_session, pam_conv, pam_end,
-    pam_handle_t, pam_message, pam_open_session, pam_response, pam_start, pam_strerror,
+    PAM_MAX_NUM_MSG, PAM_PROMPT_ECHO_OFF, PAM_SUCCESS, pam_acct_mgmt, pam_authenticate,
+    pam_close_session, pam_conv, pam_end, pam_handle_t, pam_message, pam_open_session,
+    pam_response, pam_start, pam_strerror,
 };
 use sbi_spec::base::Version;
 use std::ffi::{CStr, CString};
@@ -28,6 +29,37 @@ unsafe extern "C" {
         response: *mut *mut pam_response,
         appdata_ptr: *mut c_void,
     ) -> c_int;
+}
+
+unsafe extern "C" fn conversation(
+    num_msg: c_int,
+    msg: *mut *const pam_message,
+    response: *mut *mut pam_response,
+    appdata_ptr: *mut c_void,
+) -> c_int {
+    if (1..=PAM_MAX_NUM_MSG).contains(&num_msg) && !msg.is_null() {
+        // SAFETY: Linux-PAM supplies num_msg pointers for the duration of the
+        // conversation callback.
+        let messages = unsafe { std::slice::from_raw_parts(msg, num_msg as usize) };
+        if messages.iter().any(|message| {
+            let message = *message;
+            !message.is_null()
+                // SAFETY: non-null message pointers are owned by Linux-PAM and
+                // remain valid for the duration of this callback.
+                && unsafe { (*message).msg_style == PAM_PROMPT_ECHO_OFF }
+        }) {
+            eprintln!(
+                "{}",
+                gettext(
+                    "Querying SBI information requires elevated privileges; enter your password to continue."
+                )
+            );
+        }
+    }
+
+    // SAFETY: forward the unmodified Linux-PAM conversation arguments to
+    // libpam_misc, which performs the actual terminal interaction.
+    unsafe { misc_conv(num_msg, msg, response, appdata_ptr) }
 }
 
 pub(crate) fn run() -> Result<(), String> {
@@ -141,7 +173,7 @@ fn username_for_uid(uid: Uid) -> Result<CString, String> {
 
 fn authenticate(username: &CString) -> Result<PamSession, String> {
     let conversation = pam_conv {
-        conv: Some(misc_conv),
+        conv: Some(conversation),
         appdata_ptr: ptr::null_mut(),
     };
     let mut handle: *mut pam_handle_t = ptr::null_mut();

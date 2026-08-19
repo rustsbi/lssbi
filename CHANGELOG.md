@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
   collecting the SBI information.
 - Provide CLI help and version output, gettext localization, PAM authentication
   caching, and a POSIX installer with selectable debug and release profiles.
+- Add Arabic, French, Russian, Spanish, and Traditional Chinese translations,
+  covering all six official United Nations languages alongside English and
+  Simplified Chinese.
+- Explain the privilege requirement only when PAM requests a password.
 
 ### Fixed
 

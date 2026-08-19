@@ -68,6 +68,11 @@ Gettext sources follow the conventional `po/` layout: `LINGUAS` lists locales,
 `POTFILES.in` lists translatable sources, and `<locale>.po` contains each
 translation. Cargo compiles them into `target/<profile>/locale`.
 
+The English source messages and the `ar`, `es`, `fr`, `ru`, `zh_CN`, and
+`zh_TW` catalogs cover the six official languages of the United Nations, with
+both Simplified and Traditional Chinese available. Generic language catalogs
+such as `fr` are also used by regional locales through gettext fallback.
+
 ## Requirements
 
 - `riscv64` Linux booted through SBI
