@@ -29,6 +29,10 @@ msgid "raw"
 msgstr "原始值"
 
 #: src/driver.rs
+msgid "ID"
+msgstr "标识"
+
+#: src/driver.rs
 msgid "SBI specification"
 msgstr "SBI 规范版本"
 

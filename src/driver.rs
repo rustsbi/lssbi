@@ -6,8 +6,8 @@ use libc::{c_int, c_void};
 use nix::sys::signal::{SigSet, SigmaskHow};
 use nix::unistd::{Uid, User};
 use pam_sys::{
-    PAM_SUCCESS, pam_acct_mgmt, pam_authenticate, pam_conv, pam_end, pam_handle_t, pam_message,
-    pam_response, pam_start, pam_strerror,
+    PAM_SUCCESS, pam_acct_mgmt, pam_authenticate, pam_close_session, pam_conv, pam_end,
+    pam_handle_t, pam_message, pam_open_session, pam_response, pam_start, pam_strerror,
 };
 use sbi_spec::base::Version;
 use std::ffi::{CStr, CString};
@@ -47,10 +47,12 @@ pub(crate) fn run() -> Result<(), String> {
 
     verify_privileged_install()?;
 
-    if !real_uid.is_root() {
+    let _pam_session = if !real_uid.is_root() {
         let username = username_for_uid(real_uid)?;
-        authenticate(&username)?;
-    }
+        Some(authenticate(&username)?)
+    } else {
+        None
+    };
 
     // Block catchable signals only for the short load/read/unload window so a
     // normal Ctrl-C cannot strand the probe module. SIGKILL cannot be blocked.
@@ -137,7 +139,7 @@ fn username_for_uid(uid: Uid) -> Result<CString, String> {
     CString::new(user.name).map_err(|_| "account name contains an embedded NUL".into())
 }
 
-fn authenticate(username: &CString) -> Result<(), String> {
+fn authenticate(username: &CString) -> Result<PamSession, String> {
     let conversation = pam_conv {
         conv: Some(misc_conv),
         appdata_ptr: ptr::null_mut(),
@@ -148,7 +150,7 @@ fn authenticate(username: &CString) -> Result<(), String> {
     // pam_end, and handle is initialized as required by pam_start.
     let mut status = unsafe {
         pam_start(
-            c"sudo".as_ptr(),
+            c"sbi-info".as_ptr(),
             username.as_ptr(),
             &conversation,
             &mut handle,
@@ -162,6 +164,9 @@ fn authenticate(username: &CString) -> Result<(), String> {
     if status == PAM_SUCCESS {
         status = unsafe { pam_acct_mgmt(handle, 0) };
     }
+    if status == PAM_SUCCESS {
+        status = unsafe { pam_open_session(handle, 0) };
+    }
 
     let message = if status == PAM_SUCCESS {
         String::new()
@@ -171,15 +176,28 @@ fn authenticate(username: &CString) -> Result<(), String> {
             .to_string_lossy()
             .into_owned()
     };
-    if !handle.is_null() {
+    if status != PAM_SUCCESS && !handle.is_null() {
         // SAFETY: handle was created by pam_start and is ended exactly once.
         unsafe { pam_end(handle, status) };
     }
 
     if status == PAM_SUCCESS {
-        Ok(())
+        Ok(PamSession { handle })
     } else {
         Err(format!("PAM authentication failed: {message}"))
+    }
+}
+
+struct PamSession {
+    handle: *mut pam_handle_t,
+}
+
+impl Drop for PamSession {
+    fn drop(&mut self) {
+        // SAFETY: authenticate opened this session and transferred its sole
+        // live handle to this guard.
+        let status = unsafe { pam_close_session(self.handle, 0) };
+        unsafe { pam_end(self.handle, status) };
     }
 }
 
@@ -270,12 +288,13 @@ fn print_result(spec_raw: i64, impl_id: i64, impl_version: i64) {
     let version = impl_version as usize;
 
     let raw = gettext("raw");
+    let id = gettext("ID");
     println!(
         "{}: v{spec} ({raw} {spec_raw:#x})",
         gettext("SBI specification")
     );
     println!(
-        "{}: {} (ID {implementation:#x})",
+        "{}: {} ({id} {implementation:#x})",
         gettext("SBI implementation"),
         sbi_impl::name(implementation)
     );

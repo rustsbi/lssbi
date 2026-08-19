@@ -1,0 +1,8 @@
+#%PAM-1.0
+# SPDX-License-Identifier: MIT OR MulanPSL-2.0
+
+auth sufficient pam_timestamp.so timestamp_timeout=300
+@include common-auth
+@include common-account
+session required pam_permit.so
+session optional pam_timestamp.so

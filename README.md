@@ -19,25 +19,16 @@ gettext catalogs. Rebuild after a kernel upgrade.
 
 ## Install
 
-Create the root-owned directory and copy `target/debug/sbi-info` into it with
-`install`. Do not set setuid on the copy under `target/`, because that directory
-is controlled by the build user.
+The installer copies the PAM policy, every catalog listed in `po/LINGUAS`, and
+the executable into root-owned locations. Do not set setuid on the copy under
+`target/`, because that directory is controlled by the build user.
 
 ```sh
-sudo install -d -o root -g root -m 0755 /usr/local/sbin
-sudo install -d -o root -g root -m 0755 \
-  /usr/local/share/locale/zh_CN/LC_MESSAGES
-sudo install -o root -g root -m 0644 \
-  target/debug/locale/zh_CN/LC_MESSAGES/sbi-info.mo \
-  /usr/local/share/locale/zh_CN/LC_MESSAGES/sbi-info.mo
-sudo install -o root -g sudo -m 0750 \
-  target/debug/sbi-info \
-  /usr/local/sbin/sbi-info
-sudo chmod 4750 /usr/local/sbin/sbi-info
+sudo ./install.sh
 ```
 
-Replace the `sudo` group if your system uses a different administrative group.
-The installed mode should be `-rwsr-x---` (`root:sudo`, `4750`).
+The defaults are `PREFIX=/usr/local`, `PROFILE=debug`, and `ADMIN_GROUP=sudo`;
+packagers may also set `DESTDIR`. The installed executable has mode `4750`.
 
 ## Usage
 
@@ -48,7 +39,8 @@ sbi-info --version
 ```
 
 Help and version output exit before PAM authentication. Invoking the program
-without arguments runs the probe and requests the current account password:
+without arguments runs the probe and requests the current account password.
+Successful authentication is cached for five minutes on the current terminal:
 
 ```text
 Password:
@@ -72,7 +64,7 @@ translation. Cargo compiles them into `target/<profile>/locale`.
 - Kernel module support and matching files at
   `/lib/modules/$(uname -r)/build`
 - Rust, Cargo, GNU Make, `libpam.so.0`, and `libpam_misc.so.0`
-- A working `sudo` PAM policy
+- `pam_timestamp.so` and a working system PAM policy
 - A kernel security policy that permits module loading
 
 ## Design
@@ -82,6 +74,9 @@ Rust support. `include_bytes!` embeds the module in `sbi-info`; gettext selects
 messages from the current locale. After PAM authentication, `init_module` loads
 the probe directly from memory. The program reads three read-only values from
 sysfs and immediately calls `delete_module`.
+
+The `sbi-info` PAM service uses `pam_timestamp` for a root-owned, per-terminal
+authentication cache with a five-minute timeout.
 
 There is no external module path and no runtime `.ko` file to replace. The
 program verifies that its installed executable and parent directories are
@@ -95,7 +90,8 @@ mandatory module signatures, or disabled module loading may reject it.
 
 ## License
 
-The Rust program, build support, and documentation are available under either:
+The Rust program, PAM policy, build support, and documentation are available
+under either:
 
 - [MIT License](LICENSE-MIT)
 - [Mulan PSL v2](LICENSE-MULAN)
