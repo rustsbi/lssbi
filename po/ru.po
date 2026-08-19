@@ -47,3 +47,131 @@ msgstr "Реализация SBI"
 #: src/driver.rs
 msgid "SBI implementation version"
 msgstr "Версия реализации SBI"
+
+#: src/driver.rs
+msgid "SBI extensions"
+msgstr "Расширения SBI"
+
+#: src/driver.rs
+msgid "Vulnerabilities"
+msgstr "Уязвимости"
+
+#: src/driver.rs
+msgid "Affected"
+msgstr "Подвержен"
+
+#: src/driver.rs
+msgid "Not affected"
+msgstr "Не подвержен"
+
+#: src/driver.rs
+msgid "Supported"
+msgstr "Поддерживается"
+
+#: src/driver.rs
+msgid "Not supported"
+msgstr "Не поддерживается"
+
+#: src/sbi_ext.rs
+msgid "Base"
+msgstr "Базовое расширение"
+
+#: src/sbi_ext.rs
+msgid "Timer"
+msgstr "Таймер"
+
+#: src/sbi_ext.rs
+msgid "Inter-processor Interrupt"
+msgstr "Межпроцессорное прерывание"
+
+#: src/sbi_ext.rs
+msgid "Remote Fence"
+msgstr "Удалённый барьер"
+
+#: src/sbi_ext.rs
+msgid "Hart State Management"
+msgstr "Управление состоянием хартов"
+
+#: src/sbi_ext.rs
+msgid "System Reset"
+msgstr "Сброс системы"
+
+#: src/sbi_ext.rs
+msgid "Performance Monitoring Unit"
+msgstr "Модуль мониторинга производительности"
+
+#: src/sbi_ext.rs
+msgid "Debug Console"
+msgstr "Отладочная консоль"
+
+#: src/sbi_ext.rs
+msgid "System Suspend"
+msgstr "Приостановка системы"
+
+#: src/sbi_ext.rs
+msgid "Collab. Processor Perf. Control"
+msgstr "Совместное управление произв. процессора"
+
+#: src/sbi_ext.rs
+msgid "Nested Acceleration"
+msgstr "Вложенное ускорение"
+
+#: src/sbi_ext.rs
+msgid "Steal-time Accounting"
+msgstr "Учёт украденного времени"
+
+#: src/sbi_ext.rs
+msgid "Supervisor Software Events"
+msgstr "Программные события супервизора"
+
+#: src/sbi_ext.rs
+msgid "Firmware Features"
+msgstr "Возможности прошивки"
+
+#: src/sbi_ext.rs
+msgid "Debug Triggers"
+msgstr "Отладочные триггеры"
+
+#: src/sbi_ext.rs
+msgid "Message Proxy"
+msgstr "Прокси сообщений"
+
+#: src/sbi_ext.rs
+msgid "Legacy Set Timer"
+msgstr "Устаревшая установка таймера"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Put Character"
+msgstr "Устаревший вывод символа в консоль"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Get Character"
+msgstr "Устаревший ввод символа из консоли"
+
+#: src/sbi_ext.rs
+msgid "Legacy Clear Inter-processor Interrupt"
+msgstr "Устаревшая очистка межпроцессорного прерывания"
+
+#: src/sbi_ext.rs
+msgid "Legacy Send Inter-processor Interrupt"
+msgstr "Устаревшая отправка межпроцессорного прерывания"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Instruction Fence"
+msgstr "Устаревший удалённый барьер инструкций"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence"
+msgstr "Устаревший удалённый барьер виртуальной памяти"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence with ASID"
+msgstr "Устаревший удалённый барьер виртуальной памяти с ASID"
+
+#: src/sbi_ext.rs
+msgid "Legacy Shutdown"
+msgstr "Устаревшее выключение"
+
+#: src/vuln.rs
+msgid "PMU2 Crash"
+msgstr "Сбой PMU2"

@@ -18,6 +18,11 @@ All notable changes to this project will be documented in this file.
   covering all six official United Nations languages alongside English and
   Simplified Chinese.
 - Explain the privilege requirement only when PAM requests a password.
+- Probe and list implemented SBI 3.0 extensions using IDs provided by
+  `sbi-spec`, with deprecated legacy extensions available through `--legacy`.
+- Localize extension names and report a supported or not-supported status for
+  every probed extension.
+- Report OpenSBI PMU2 Crash (CVE-2025-63913) exposure from the firmware version.
 
 ### Changed
 

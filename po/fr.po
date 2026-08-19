@@ -47,3 +47,131 @@ msgstr "Implémentation SBI"
 #: src/driver.rs
 msgid "SBI implementation version"
 msgstr "Version de l’implémentation SBI"
+
+#: src/driver.rs
+msgid "SBI extensions"
+msgstr "Extensions SBI"
+
+#: src/driver.rs
+msgid "Vulnerabilities"
+msgstr "Vulnérabilités"
+
+#: src/driver.rs
+msgid "Affected"
+msgstr "Affecté"
+
+#: src/driver.rs
+msgid "Not affected"
+msgstr "Non affecté"
+
+#: src/driver.rs
+msgid "Supported"
+msgstr "Pris en charge"
+
+#: src/driver.rs
+msgid "Not supported"
+msgstr "Non pris en charge"
+
+#: src/sbi_ext.rs
+msgid "Base"
+msgstr "Base"
+
+#: src/sbi_ext.rs
+msgid "Timer"
+msgstr "Minuterie"
+
+#: src/sbi_ext.rs
+msgid "Inter-processor Interrupt"
+msgstr "Interruption interprocesseur"
+
+#: src/sbi_ext.rs
+msgid "Remote Fence"
+msgstr "Barrière distante"
+
+#: src/sbi_ext.rs
+msgid "Hart State Management"
+msgstr "Gestion de l’état des harts"
+
+#: src/sbi_ext.rs
+msgid "System Reset"
+msgstr "Réinitialisation du système"
+
+#: src/sbi_ext.rs
+msgid "Performance Monitoring Unit"
+msgstr "Unité de surveillance des performances"
+
+#: src/sbi_ext.rs
+msgid "Debug Console"
+msgstr "Console de débogage"
+
+#: src/sbi_ext.rs
+msgid "System Suspend"
+msgstr "Suspension du système"
+
+#: src/sbi_ext.rs
+msgid "Collab. Processor Perf. Control"
+msgstr "Contrôle collab. des perf. processeur"
+
+#: src/sbi_ext.rs
+msgid "Nested Acceleration"
+msgstr "Accélération imbriquée"
+
+#: src/sbi_ext.rs
+msgid "Steal-time Accounting"
+msgstr "Comptabilisation du temps volé"
+
+#: src/sbi_ext.rs
+msgid "Supervisor Software Events"
+msgstr "Événements logiciels du superviseur"
+
+#: src/sbi_ext.rs
+msgid "Firmware Features"
+msgstr "Fonctionnalités du micrologiciel"
+
+#: src/sbi_ext.rs
+msgid "Debug Triggers"
+msgstr "Déclencheurs de débogage"
+
+#: src/sbi_ext.rs
+msgid "Message Proxy"
+msgstr "Proxy de messages"
+
+#: src/sbi_ext.rs
+msgid "Legacy Set Timer"
+msgstr "Ancienne interface de réglage de la minuterie"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Put Character"
+msgstr "Ancienne interface d’écriture d’un caractère dans la console"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Get Character"
+msgstr "Ancienne interface de lecture d’un caractère depuis la console"
+
+#: src/sbi_ext.rs
+msgid "Legacy Clear Inter-processor Interrupt"
+msgstr "Ancienne interface d’effacement d’une interruption interprocesseur"
+
+#: src/sbi_ext.rs
+msgid "Legacy Send Inter-processor Interrupt"
+msgstr "Ancienne interface d’envoi d’une interruption interprocesseur"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Instruction Fence"
+msgstr "Ancienne interface de barrière d’instructions distante"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence"
+msgstr "Ancienne interface de barrière de mémoire virtuelle distante"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence with ASID"
+msgstr "Ancienne interface de barrière de mémoire virtuelle distante avec ASID"
+
+#: src/sbi_ext.rs
+msgid "Legacy Shutdown"
+msgstr "Ancienne interface d’arrêt"
+
+#: src/vuln.rs
+msgid "PMU2 Crash"
+msgstr "Plantage PMU2"

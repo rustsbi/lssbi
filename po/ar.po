@@ -47,3 +47,131 @@ msgstr "تنفيذ SBI"
 #: src/driver.rs
 msgid "SBI implementation version"
 msgstr "إصدار تنفيذ SBI"
+
+#: src/driver.rs
+msgid "SBI extensions"
+msgstr "امتدادات SBI"
+
+#: src/driver.rs
+msgid "Vulnerabilities"
+msgstr "الثغرات"
+
+#: src/driver.rs
+msgid "Affected"
+msgstr "متأثر"
+
+#: src/driver.rs
+msgid "Not affected"
+msgstr "غير متأثر"
+
+#: src/driver.rs
+msgid "Supported"
+msgstr "مدعوم"
+
+#: src/driver.rs
+msgid "Not supported"
+msgstr "غير مدعوم"
+
+#: src/sbi_ext.rs
+msgid "Base"
+msgstr "الأساسي"
+
+#: src/sbi_ext.rs
+msgid "Timer"
+msgstr "المؤقّت"
+
+#: src/sbi_ext.rs
+msgid "Inter-processor Interrupt"
+msgstr "مقاطعة بين المعالجات"
+
+#: src/sbi_ext.rs
+msgid "Remote Fence"
+msgstr "الحاجز البعيد"
+
+#: src/sbi_ext.rs
+msgid "Hart State Management"
+msgstr "إدارة حالة الـ hart"
+
+#: src/sbi_ext.rs
+msgid "System Reset"
+msgstr "إعادة ضبط النظام"
+
+#: src/sbi_ext.rs
+msgid "Performance Monitoring Unit"
+msgstr "وحدة مراقبة الأداء"
+
+#: src/sbi_ext.rs
+msgid "Debug Console"
+msgstr "وحدة تحكم التصحيح"
+
+#: src/sbi_ext.rs
+msgid "System Suspend"
+msgstr "تعليق النظام"
+
+#: src/sbi_ext.rs
+msgid "Collab. Processor Perf. Control"
+msgstr "التحكم التعاوني بأداء المعالج"
+
+#: src/sbi_ext.rs
+msgid "Nested Acceleration"
+msgstr "التسريع المتداخل"
+
+#: src/sbi_ext.rs
+msgid "Steal-time Accounting"
+msgstr "محاسبة الوقت المسروق"
+
+#: src/sbi_ext.rs
+msgid "Supervisor Software Events"
+msgstr "أحداث برمجية للمشرف"
+
+#: src/sbi_ext.rs
+msgid "Firmware Features"
+msgstr "ميزات البرنامج الثابت"
+
+#: src/sbi_ext.rs
+msgid "Debug Triggers"
+msgstr "مشغلات التصحيح"
+
+#: src/sbi_ext.rs
+msgid "Message Proxy"
+msgstr "وكيل الرسائل"
+
+#: src/sbi_ext.rs
+msgid "Legacy Set Timer"
+msgstr "ضبط المؤقّت القديم"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Put Character"
+msgstr "إخراج محرف قديم إلى وحدة التحكم"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Get Character"
+msgstr "إدخال محرف قديم من وحدة التحكم"
+
+#: src/sbi_ext.rs
+msgid "Legacy Clear Inter-processor Interrupt"
+msgstr "مسح مقاطعة قديمة بين المعالجات"
+
+#: src/sbi_ext.rs
+msgid "Legacy Send Inter-processor Interrupt"
+msgstr "إرسال مقاطعة قديمة بين المعالجات"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Instruction Fence"
+msgstr "حاجز تعليمات بعيد قديم"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence"
+msgstr "حاجز ذاكرة افتراضية بعيد قديم"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence with ASID"
+msgstr "حاجز ذاكرة افتراضية بعيد قديم مع ASID"
+
+#: src/sbi_ext.rs
+msgid "Legacy Shutdown"
+msgstr "إيقاف التشغيل القديم"
+
+#: src/vuln.rs
+msgid "PMU2 Crash"
+msgstr "تعطل PMU2"

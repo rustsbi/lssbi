@@ -47,3 +47,131 @@ msgstr "Implementación SBI"
 #: src/driver.rs
 msgid "SBI implementation version"
 msgstr "Versión de la implementación SBI"
+
+#: src/driver.rs
+msgid "SBI extensions"
+msgstr "Extensiones SBI"
+
+#: src/driver.rs
+msgid "Vulnerabilities"
+msgstr "Vulnerabilidades"
+
+#: src/driver.rs
+msgid "Affected"
+msgstr "Afectado"
+
+#: src/driver.rs
+msgid "Not affected"
+msgstr "No afectado"
+
+#: src/driver.rs
+msgid "Supported"
+msgstr "Admitida"
+
+#: src/driver.rs
+msgid "Not supported"
+msgstr "No admitida"
+
+#: src/sbi_ext.rs
+msgid "Base"
+msgstr "Base"
+
+#: src/sbi_ext.rs
+msgid "Timer"
+msgstr "Temporizador"
+
+#: src/sbi_ext.rs
+msgid "Inter-processor Interrupt"
+msgstr "Interrupción entre procesadores"
+
+#: src/sbi_ext.rs
+msgid "Remote Fence"
+msgstr "Barrera remota"
+
+#: src/sbi_ext.rs
+msgid "Hart State Management"
+msgstr "Gestión del estado de los harts"
+
+#: src/sbi_ext.rs
+msgid "System Reset"
+msgstr "Reinicio del sistema"
+
+#: src/sbi_ext.rs
+msgid "Performance Monitoring Unit"
+msgstr "Unidad de supervisión del rendimiento"
+
+#: src/sbi_ext.rs
+msgid "Debug Console"
+msgstr "Consola de depuración"
+
+#: src/sbi_ext.rs
+msgid "System Suspend"
+msgstr "Suspensión del sistema"
+
+#: src/sbi_ext.rs
+msgid "Collab. Processor Perf. Control"
+msgstr "Control colab. del rend. del procesador"
+
+#: src/sbi_ext.rs
+msgid "Nested Acceleration"
+msgstr "Aceleración anidada"
+
+#: src/sbi_ext.rs
+msgid "Steal-time Accounting"
+msgstr "Contabilidad del tiempo robado"
+
+#: src/sbi_ext.rs
+msgid "Supervisor Software Events"
+msgstr "Eventos de software del supervisor"
+
+#: src/sbi_ext.rs
+msgid "Firmware Features"
+msgstr "Funciones del firmware"
+
+#: src/sbi_ext.rs
+msgid "Debug Triggers"
+msgstr "Disparadores de depuración"
+
+#: src/sbi_ext.rs
+msgid "Message Proxy"
+msgstr "Proxy de mensajes"
+
+#: src/sbi_ext.rs
+msgid "Legacy Set Timer"
+msgstr "Configuración heredada del temporizador"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Put Character"
+msgstr "Salida heredada de caracteres por consola"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Get Character"
+msgstr "Entrada heredada de caracteres por consola"
+
+#: src/sbi_ext.rs
+msgid "Legacy Clear Inter-processor Interrupt"
+msgstr "Borrado heredado de interrupciones entre procesadores"
+
+#: src/sbi_ext.rs
+msgid "Legacy Send Inter-processor Interrupt"
+msgstr "Envío heredado de interrupciones entre procesadores"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Instruction Fence"
+msgstr "Barrera heredada de instrucciones remotas"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence"
+msgstr "Barrera heredada de memoria virtual remota"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence with ASID"
+msgstr "Barrera heredada de memoria virtual remota con ASID"
+
+#: src/sbi_ext.rs
+msgid "Legacy Shutdown"
+msgstr "Apagado heredado"
+
+#: src/vuln.rs
+msgid "PMU2 Crash"
+msgstr "Fallo de PMU2"

@@ -6,7 +6,9 @@
 compile_error!("lssbi is intentionally restricted to riscv64 Linux");
 
 mod driver;
+mod sbi_ext;
 mod sbi_impl;
+mod vuln;
 
 use clap::Parser;
 
@@ -18,11 +20,15 @@ use clap::Parser;
     long_about = None,
     help_template = "{before-help}{name} {version}\n{author-with-newline}{about-with-newline}\n{usage-heading} {usage}\n\n{all-args}{after-help}"
 )]
-struct Cli {}
+struct Cli {
+    /// Probe deprecated legacy SBI extensions.
+    #[arg(long)]
+    legacy: bool,
+}
 
 fn main() {
-    Cli::parse();
-    if let Err(error) = driver::run() {
+    let cli = Cli::parse();
+    if let Err(error) = driver::run(cli.legacy) {
         eprintln!("lssbi: {error}");
         std::process::exit(1);
     }

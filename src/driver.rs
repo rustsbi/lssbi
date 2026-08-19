@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT OR MulanPSL-2.0
 
-use crate::sbi_impl;
+use crate::{sbi_ext, sbi_impl, vuln};
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, gettext, textdomain};
 use libc::{c_int, c_void};
 use nix::sys::signal::{SigSet, SigmaskHow};
@@ -17,6 +17,7 @@ use std::io;
 use std::os::unix::fs::MetadataExt;
 use std::path::PathBuf;
 use std::ptr;
+use unicode_width::UnicodeWidthStr;
 
 const MODULE_NAME: &str = "sbi_probe";
 const TEXT_DOMAIN: &str = "lssbi";
@@ -62,7 +63,7 @@ unsafe extern "C" fn conversation(
     unsafe { misc_conv(num_msg, msg, response, appdata_ptr) }
 }
 
-pub(crate) fn run() -> Result<(), String> {
+pub(crate) fn run(include_legacy: bool) -> Result<(), String> {
     // Match the invoking user's locale before PAM translates its messages.
     // SAFETY: run is called once, before any PAM transaction or thread exists.
     unsafe {
@@ -89,15 +90,31 @@ pub(crate) fn run() -> Result<(), String> {
     // Block catchable signals only for the short load/read/unload window so a
     // normal Ctrl-C cannot strand the probe module. SIGKILL cannot be blocked.
     let signals = SignalMaskGuard::block_all()?;
-    let mut loaded = load_module()?;
+    let extensions = sbi_ext::selected(include_legacy);
+    let module_parameters = sbi_ext::module_parameters(&extensions);
+    let mut loaded = load_module(&module_parameters)?;
 
     let spec_raw = read_parameter("spec_raw")?;
     let impl_id = read_parameter("impl_id")?;
     let impl_version = read_parameter("impl_version")?;
+    let extension_values = read_parameter_list("extension_values")?;
+    if extension_values.len() != extensions.len() {
+        return Err(format!(
+            "kernel probe returned {} extension values; expected {}",
+            extension_values.len(),
+            extensions.len()
+        ));
+    }
 
     loaded.unload()?;
     drop(signals);
-    print_result(spec_raw, impl_id, impl_version);
+    print_result(
+        spec_raw,
+        impl_id,
+        impl_version,
+        &extensions,
+        &extension_values,
+    );
     Ok(())
 }
 
@@ -256,7 +273,7 @@ struct LoadedModule {
     active: bool,
 }
 
-fn load_module() -> Result<LoadedModule, String> {
+fn load_module(parameters: &CStr) -> Result<LoadedModule, String> {
     // SAFETY: the embedded byte slice and NUL-terminated parameters stay valid
     // for this synchronous syscall.
     let result = unsafe {
@@ -264,7 +281,7 @@ fn load_module() -> Result<LoadedModule, String> {
             libc::SYS_init_module,
             EMBEDDED_MODULE.as_ptr(),
             EMBEDDED_MODULE.len(),
-            c"".as_ptr(),
+            parameters.as_ptr(),
         )
     };
     if result != 0 {
@@ -313,10 +330,33 @@ fn read_parameter(name: &str) -> Result<i64, String> {
         .map_err(|e| format!("invalid value in {}: {e}", path.display()))
 }
 
-fn print_result(spec_raw: i64, impl_id: i64, impl_version: i64) {
+fn read_parameter_list(name: &str) -> Result<Vec<i64>, String> {
+    let path = PathBuf::from("/sys/module")
+        .join(MODULE_NAME)
+        .join("parameters")
+        .join(name);
+    let text =
+        fs::read_to_string(&path).map_err(|e| format!("cannot read {}: {e}", path.display()))?;
+    text.trim()
+        .split(',')
+        .map(|value| {
+            value
+                .parse()
+                .map_err(|e| format!("invalid value in {}: {e}", path.display()))
+        })
+        .collect()
+}
+
+fn print_result(
+    spec_raw: i64,
+    impl_id: i64,
+    impl_version: i64,
+    extensions: &[sbi_ext::Extension],
+    extension_values: &[i64],
+) {
     let spec_raw = spec_raw as usize;
     let spec = Version::from_raw(spec_raw);
-    let implementation = impl_id as usize;
+    let impl_id = impl_id as usize;
     let version = impl_version as usize;
 
     let raw = gettext("raw");
@@ -326,13 +366,42 @@ fn print_result(spec_raw: i64, impl_id: i64, impl_version: i64) {
         gettext("SBI specification")
     );
     println!(
-        "{}: {} ({id} {implementation:#x})",
+        "{}: {} ({id} {impl_id:#x})",
         gettext("SBI implementation"),
-        sbi_impl::name(implementation)
+        sbi_impl::name(impl_id)
     );
     println!(
         "{}: v{} ({raw} {version:#x})",
         gettext("SBI implementation version"),
-        sbi_impl::version(implementation, version)
+        sbi_impl::version(impl_id, version)
     );
+    println!("{}:", gettext("SBI extensions"));
+    let extension_width = extensions
+        .iter()
+        .map(|extension| UnicodeWidthStr::width(extension.name.as_str()) + 2)
+        .max()
+        .unwrap_or(0)
+        .clamp(32, 48);
+    for (extension, value) in extensions.iter().zip(extension_values) {
+        let label = format!("{}:", extension.name);
+        let status = if *value != 0 {
+            gettext("Supported")
+        } else {
+            gettext("Not supported")
+        };
+        print_status(&label, &status, extension_width);
+    }
+    println!("{}:", gettext("Vulnerabilities"));
+    let status = gettext(if vuln::pmu2_crash(impl_id, version) {
+        "Affected"
+    } else {
+        "Not affected"
+    });
+    let label = format!("{} (CVE-2025-63913):", vuln::pmu2_crash_name());
+    print_status(&label, &status, 32);
+}
+
+fn print_status(label: &str, status: &str, width: usize) {
+    let padding = width.saturating_sub(UnicodeWidthStr::width(label)).max(1);
+    println!("  {label}{}{status}", " ".repeat(padding));
 }

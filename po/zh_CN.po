@@ -47,3 +47,131 @@ msgstr "SBI 实现"
 #: src/driver.rs
 msgid "SBI implementation version"
 msgstr "SBI 实现版本"
+
+#: src/driver.rs
+msgid "SBI extensions"
+msgstr "SBI 扩展"
+
+#: src/driver.rs
+msgid "Vulnerabilities"
+msgstr "漏洞"
+
+#: src/driver.rs
+msgid "Affected"
+msgstr "受影响"
+
+#: src/driver.rs
+msgid "Not affected"
+msgstr "不受影响"
+
+#: src/driver.rs
+msgid "Supported"
+msgstr "支持"
+
+#: src/driver.rs
+msgid "Not supported"
+msgstr "不支持"
+
+#: src/sbi_ext.rs
+msgid "Base"
+msgstr "基础"
+
+#: src/sbi_ext.rs
+msgid "Timer"
+msgstr "定时器"
+
+#: src/sbi_ext.rs
+msgid "Inter-processor Interrupt"
+msgstr "处理器间中断"
+
+#: src/sbi_ext.rs
+msgid "Remote Fence"
+msgstr "远程栅栏"
+
+#: src/sbi_ext.rs
+msgid "Hart State Management"
+msgstr "硬件线程状态管理"
+
+#: src/sbi_ext.rs
+msgid "System Reset"
+msgstr "系统复位"
+
+#: src/sbi_ext.rs
+msgid "Performance Monitoring Unit"
+msgstr "性能监控单元"
+
+#: src/sbi_ext.rs
+msgid "Debug Console"
+msgstr "调试控制台"
+
+#: src/sbi_ext.rs
+msgid "System Suspend"
+msgstr "系统挂起"
+
+#: src/sbi_ext.rs
+msgid "Collab. Processor Perf. Control"
+msgstr "协作式处理器性能控制"
+
+#: src/sbi_ext.rs
+msgid "Nested Acceleration"
+msgstr "嵌套加速"
+
+#: src/sbi_ext.rs
+msgid "Steal-time Accounting"
+msgstr "窃取时间统计"
+
+#: src/sbi_ext.rs
+msgid "Supervisor Software Events"
+msgstr "监管者态软件事件"
+
+#: src/sbi_ext.rs
+msgid "Firmware Features"
+msgstr "固件特性"
+
+#: src/sbi_ext.rs
+msgid "Debug Triggers"
+msgstr "调试触发器"
+
+#: src/sbi_ext.rs
+msgid "Message Proxy"
+msgstr "消息代理"
+
+#: src/sbi_ext.rs
+msgid "Legacy Set Timer"
+msgstr "旧版设置定时器"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Put Character"
+msgstr "旧版控制台输出字符"
+
+#: src/sbi_ext.rs
+msgid "Legacy Console Get Character"
+msgstr "旧版控制台输入字符"
+
+#: src/sbi_ext.rs
+msgid "Legacy Clear Inter-processor Interrupt"
+msgstr "旧版清除处理器间中断"
+
+#: src/sbi_ext.rs
+msgid "Legacy Send Inter-processor Interrupt"
+msgstr "旧版发送处理器间中断"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Instruction Fence"
+msgstr "旧版远程指令栅栏"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence"
+msgstr "旧版远程虚拟内存栅栏"
+
+#: src/sbi_ext.rs
+msgid "Legacy Remote Virtual-memory Fence with ASID"
+msgstr "旧版含 ASID 的远程虚拟内存栅栏"
+
+#: src/sbi_ext.rs
+msgid "Legacy Shutdown"
+msgstr "旧版关机"
+
+#: src/vuln.rs
+msgid "PMU2 Crash"
+msgstr "PMU2 崩溃"

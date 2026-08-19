@@ -43,6 +43,7 @@ sudo PROFILE=release ./install.sh
 
 ```sh
 lssbi
+lssbi --legacy
 lssbi --help
 lssbi --version
 ```
@@ -56,10 +57,15 @@ Password:
 SBI specification: v2.0 (raw 0x2000000)
 SBI implementation: OpenSBI (ID 0x1)
 SBI implementation version: v1.6 (raw 0x10006)
+SBI extensions:
+  Base:                           Supported
+  Nested Acceleration:            Not supported
+Vulnerabilities:
+  PMU2 Crash (CVE-2025-63913): Affected
 ```
 
 Output follows the invoking user's locale. Use `LC_ALL=C lssbi` to force
-English.
+English. Deprecated legacy SBI extensions are probed only with `--legacy`.
 
 ## Translation
 
@@ -86,8 +92,13 @@ such as `fr` are also used by regional locales through gettext fallback.
 Kbuild compiles the small C probe because the target kernel does not enable
 Rust support. `include_bytes!` embeds the module in `lssbi`; gettext selects
 messages from the current locale. After PAM authentication, `init_module` loads
-the probe directly from memory. The program reads three read-only values from
-sysfs and immediately calls `delete_module`.
+the probe directly from memory. Rust supplies every SBI 3.0 extension ID exposed
+by `sbi-spec`; by default, the module probes only current extensions and
+publishes the results with the three base values through sysfs. The program
+prints a localized supported/not-supported status for each probed extension,
+then immediately calls `delete_module`. It also reports known firmware
+vulnerabilities from the SBI implementation ID and version without running
+vulnerability triggers.
 
 The `lssbi` PAM service uses `pam_timestamp` for a root-owned, per-terminal
 authentication cache with a five-minute timeout.
