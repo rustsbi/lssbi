@@ -5,6 +5,8 @@
 #[cfg(not(target_arch = "riscv64"))]
 compile_error!("sbi-info is intentionally restricted to riscv64 Linux");
 
+mod sbi_impl;
+
 use libc::{c_int, c_void};
 use nix::sys::signal::{SigSet, SigmaskHow};
 use nix::unistd::{Uid, User};
@@ -12,6 +14,7 @@ use pam_sys::{
     PAM_SUCCESS, pam_acct_mgmt, pam_authenticate, pam_conv, pam_end, pam_handle_t, pam_message,
     pam_response, pam_start, pam_strerror,
 };
+use sbi_spec::base::Version;
 use std::ffi::{CStr, CString};
 use std::fs;
 use std::io;
@@ -233,44 +236,18 @@ fn read_parameter(name: &str) -> Result<i64, String> {
 }
 
 fn print_result(spec_raw: i64, impl_id: i64, impl_version: i64) {
-    let spec = spec_raw as u64;
-    let implementation = impl_id as u64;
-    let version = impl_version as u64;
+    let spec_raw = spec_raw as usize;
+    let spec = Version::from_raw(spec_raw);
+    let implementation = impl_id as usize;
+    let version = impl_version as usize;
 
-    println!(
-        "SBI specification: v{}.{} (raw {spec:#x})",
-        (spec >> 24) & 0x7f,
-        spec & 0x00ff_ffff
-    );
+    println!("SBI specification: v{spec} (raw {spec_raw:#x})");
     println!(
         "SBI implementation: {} (ID {implementation:#x})",
-        implementation_name(implementation)
+        sbi_impl::name(implementation)
     );
-    println!("SBI implementation version: {version:#x}");
-
-    if implementation == 1 {
-        println!(
-            "OpenSBI version: v{}.{}",
-            (version >> 16) & 0xffff,
-            version & 0xffff
-        );
-    }
-}
-
-fn implementation_name(id: u64) -> &'static str {
-    match id {
-        0 => "Berkeley Boot Loader (BBL)",
-        1 => "OpenSBI",
-        2 => "Xvisor",
-        3 => "KVM",
-        4 => "RustSBI",
-        5 => "Diosix",
-        6 => "Coffer",
-        7 => "Xen Project",
-        8 => "PolarFire Hart Software Services",
-        9 => "coreboot",
-        10 => "oreboot",
-        11 => "bhyve",
-        _ => "unknown",
-    }
+    println!(
+        "SBI implementation version: v{} (raw {version:#x})",
+        sbi_impl::version(implementation, version)
+    );
 }

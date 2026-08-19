@@ -54,4 +54,14 @@ dependencies = [
  "libc",
  "nix",
  "pam-sys2",
+ "sbi-spec",
+]
+
+[[package]]
+name = "sbi-spec"
+version = "0.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "785b91fcc41c7426fc07510be49ed1db44f002b45d45c175ec7f155c3cd447a9"
+dependencies = [
+ "bitflags",
 ]

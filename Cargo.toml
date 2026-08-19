@@ -13,4 +13,4 @@ categories = ["command-line-utilities", "hardware-support"]
 libc = "0.2"
 nix = { version = "0.31.3", features = ["signal", "user"] }
 pam-sys = { package = "pam-sys2", version = "1.0.2" }
-
+sbi-spec = "0.0.9"
