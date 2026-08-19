@@ -49,6 +49,18 @@ msgid "SBI implementation version"
 msgstr "SBI 实现版本"
 
 #: src/driver.rs
+msgid "Machine vendor ID"
+msgstr "机器厂商标识"
+
+#: src/driver.rs
+msgid "Machine architecture ID"
+msgstr "机器架构标识"
+
+#: src/driver.rs
+msgid "Machine implementation ID"
+msgstr "机器实现标识"
+
+#: src/driver.rs
 msgid "SBI extensions"
 msgstr "SBI 扩展"
 
@@ -175,3 +187,27 @@ msgstr "旧版关机"
 #: src/vuln.rs
 msgid "PMU2 Crash"
 msgstr "PMU2 崩溃"
+
+#: src/fwft.rs
+msgid "Misaligned Exception Delegation"
+msgstr "非对齐异常委托"
+
+#: src/fwft.rs
+msgid "Landing Pad"
+msgstr "着陆点"
+
+#: src/fwft.rs
+msgid "Shadow Stack"
+msgstr "影子栈"
+
+#: src/fwft.rs
+msgid "Double Trap"
+msgstr "双重陷阱"
+
+#: src/fwft.rs
+msgid "PTE A/D Hardware Updating"
+msgstr "PTE A/D 位硬件更新"
+
+#: src/fwft.rs
+msgid "Pointer Masking PMLEN"
+msgstr "指针掩码 PMLEN"

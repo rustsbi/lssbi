@@ -57,11 +57,18 @@ Password:
 SBI specification: v2.0 (raw 0x2000000)
 SBI implementation: OpenSBI (ID 0x1)
 SBI implementation version: v1.6 (raw 0x10006)
+Machine vendor ID: Nordic VLSI ASA (raw 0x144)
+Machine architecture ID: Rocket (raw 0x1)
+Machine implementation ID: 0x0
 SBI extensions:
   Base:                           Supported
   Nested Acceleration:            Not supported
 Vulnerabilities:
   PMU2 Crash (CVE-2025-63913): Affected
+Firmware Features:
+  Misaligned Exception Delegation: Supported
+  ...
+  Pointer Masking PMLEN:           0
 ```
 
 Output follows the invoking user's locale. Use `LC_ALL=C lssbi` to force
@@ -94,11 +101,15 @@ Rust support. `include_bytes!` embeds the module in `lssbi`; gettext selects
 messages from the current locale. After PAM authentication, `init_module` loads
 the probe directly from memory. Rust supplies every SBI 3.0 extension ID exposed
 by `sbi-spec`; by default, the module probes only current extensions and
-publishes the results with the three base values through sysfs. The program
+publishes the results with all SBI Base values through sysfs. Registered
+open-source machine architecture IDs are shown with their canonical project
+names, and known machine vendor IDs with their JEP106 manufacturer names. The
+program
 prints a localized supported/not-supported status for each probed extension,
 then immediately calls `delete_module`. It also reports known firmware
 vulnerabilities from the SBI implementation ID and version without running
-vulnerability triggers.
+vulnerability triggers. When FWFT is available, the module queries all six
+standard firmware features and reports their configuration values.
 
 The `lssbi` PAM service uses `pam_timestamp` for a root-owned, per-terminal
 authentication cache with a five-minute timeout.

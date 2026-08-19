@@ -6,6 +6,9 @@
 compile_error!("lssbi is intentionally restricted to riscv64 Linux");
 
 mod driver;
+mod fwft;
+mod marchid;
+mod mvendorid;
 mod sbi_ext;
 mod sbi_impl;
 mod vuln;

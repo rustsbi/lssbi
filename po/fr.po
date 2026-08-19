@@ -49,6 +49,18 @@ msgid "SBI implementation version"
 msgstr "Version de l’implémentation SBI"
 
 #: src/driver.rs
+msgid "Machine vendor ID"
+msgstr "Identifiant du fournisseur de la machine"
+
+#: src/driver.rs
+msgid "Machine architecture ID"
+msgstr "Identifiant d’architecture de la machine"
+
+#: src/driver.rs
+msgid "Machine implementation ID"
+msgstr "Identifiant d’implémentation de la machine"
+
+#: src/driver.rs
 msgid "SBI extensions"
 msgstr "Extensions SBI"
 
@@ -175,3 +187,27 @@ msgstr "Ancienne interface d’arrêt"
 #: src/vuln.rs
 msgid "PMU2 Crash"
 msgstr "Plantage PMU2"
+
+#: src/fwft.rs
+msgid "Misaligned Exception Delegation"
+msgstr "Délégation des exceptions de désalignement"
+
+#: src/fwft.rs
+msgid "Landing Pad"
+msgstr "Zone d’atterrissage"
+
+#: src/fwft.rs
+msgid "Shadow Stack"
+msgstr "Pile fantôme"
+
+#: src/fwft.rs
+msgid "Double Trap"
+msgstr "Double piège"
+
+#: src/fwft.rs
+msgid "PTE A/D Hardware Updating"
+msgstr "Mise à jour matérielle des bits A/D de PTE"
+
+#: src/fwft.rs
+msgid "Pointer Masking PMLEN"
+msgstr "PMLEN du masquage de pointeur"

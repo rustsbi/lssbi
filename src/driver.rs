@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT OR MulanPSL-2.0
 
-use crate::{sbi_ext, sbi_impl, vuln};
+use crate::{fwft, marchid, mvendorid, sbi_ext, sbi_impl, vuln};
 use gettextrs::{bind_textdomain_codeset, bindtextdomain, gettext, textdomain};
 use libc::{c_int, c_void};
 use nix::sys::signal::{SigSet, SigmaskHow};
@@ -10,7 +10,7 @@ use pam_sys::{
     pam_close_session, pam_conv, pam_end, pam_handle_t, pam_message, pam_open_session,
     pam_response, pam_start, pam_strerror,
 };
-use sbi_spec::base::Version;
+use sbi_spec::{base::Version, fwft::EID_FWFT};
 use std::ffi::{CStr, CString};
 use std::fs;
 use std::io;
@@ -91,12 +91,17 @@ pub(crate) fn run(include_legacy: bool) -> Result<(), String> {
     // normal Ctrl-C cannot strand the probe module. SIGKILL cannot be blocked.
     let signals = SignalMaskGuard::block_all()?;
     let extensions = sbi_ext::selected(include_legacy);
-    let module_parameters = sbi_ext::module_parameters(&extensions);
+    let fwft_features = fwft::features();
+    let extension_parameters = sbi_ext::module_parameters(&extensions);
+    let module_parameters = CString::new(format!(
+        "{} {}",
+        extension_parameters.to_str().unwrap(),
+        fwft::module_parameters(&fwft_features)
+    ))
+    .unwrap();
     let mut loaded = load_module(&module_parameters)?;
 
-    let spec_raw = read_parameter("spec_raw")?;
-    let impl_id = read_parameter("impl_id")?;
-    let impl_version = read_parameter("impl_version")?;
+    let base = BaseInfo::read()?;
     let extension_values = read_parameter_list("extension_values")?;
     if extension_values.len() != extensions.len() {
         return Err(format!(
@@ -105,16 +110,32 @@ pub(crate) fn run(include_legacy: bool) -> Result<(), String> {
             extensions.len()
         ));
     }
+    let fwft_results = if extensions
+        .iter()
+        .zip(&extension_values)
+        .any(|(extension, value)| extension.id == EID_FWFT && *value != 0)
+    {
+        let errors = read_parameter_list("fwft_errors")?;
+        let values = read_parameter_list("fwft_values")?;
+        if errors.len() != fwft_features.len() || values.len() != fwft_features.len() {
+            return Err(format!(
+                "kernel probe returned {} FWFT errors and {} values; expected {}",
+                errors.len(),
+                values.len(),
+                fwft_features.len()
+            ));
+        }
+        Some((errors, values))
+    } else {
+        None
+    };
 
     loaded.unload()?;
     drop(signals);
-    print_result(
-        spec_raw,
-        impl_id,
-        impl_version,
-        &extensions,
-        &extension_values,
-    );
+    print_result(&base, &extensions, &extension_values);
+    if let Some((errors, values)) = fwft_results {
+        print_fwft(&fwft_features, &errors, &values);
+    }
     Ok(())
 }
 
@@ -347,17 +368,38 @@ fn read_parameter_list(name: &str) -> Result<Vec<i64>, String> {
         .collect()
 }
 
-fn print_result(
+struct BaseInfo {
     spec_raw: i64,
     impl_id: i64,
     impl_version: i64,
-    extensions: &[sbi_ext::Extension],
-    extension_values: &[i64],
-) {
-    let spec_raw = spec_raw as usize;
+    mvendorid: i64,
+    marchid: i64,
+    mimpid: i64,
+}
+
+impl BaseInfo {
+    fn read() -> Result<Self, String> {
+        Ok(Self {
+            spec_raw: read_parameter("spec_raw")?,
+            impl_id: read_parameter("impl_id")?,
+            impl_version: read_parameter("impl_version")?,
+            mvendorid: read_parameter("mvendorid")?,
+            marchid: read_parameter("marchid")?,
+            mimpid: read_parameter("mimpid")?,
+        })
+    }
+}
+
+fn print_result(base: &BaseInfo, extensions: &[sbi_ext::Extension], extension_values: &[i64]) {
+    let spec_raw = base.spec_raw as usize;
     let spec = Version::from_raw(spec_raw);
-    let impl_id = impl_id as usize;
-    let version = impl_version as usize;
+    let impl_id = base.impl_id as usize;
+    let version = base.impl_version as usize;
+    let (mvendorid, marchid, mimpid) = (
+        base.mvendorid as usize,
+        base.marchid as usize,
+        base.mimpid as usize,
+    );
 
     let raw = gettext("raw");
     let id = gettext("ID");
@@ -375,6 +417,23 @@ fn print_result(
         gettext("SBI implementation version"),
         sbi_impl::version(impl_id, version)
     );
+    if let Some(vendor) = mvendorid::vendor_name(mvendorid) {
+        println!(
+            "{}: {vendor} ({raw} {mvendorid:#x})",
+            gettext("Machine vendor ID")
+        );
+    } else {
+        println!("{}: {mvendorid:#x}", gettext("Machine vendor ID"));
+    }
+    if let Some(project) = marchid::project_name(marchid) {
+        println!(
+            "{}: {project} ({raw} {marchid:#x})",
+            gettext("Machine architecture ID")
+        );
+    } else {
+        println!("{}: {marchid:#x}", gettext("Machine architecture ID"));
+    }
+    println!("{}: {mimpid:#x}", gettext("Machine implementation ID"));
     println!("{}:", gettext("SBI extensions"));
     let extension_width = extensions
         .iter()
@@ -404,4 +463,30 @@ fn print_result(
 fn print_status(label: &str, status: &str, width: usize) {
     let padding = width.saturating_sub(UnicodeWidthStr::width(label)).max(1);
     println!("  {label}{}{status}", " ".repeat(padding));
+}
+
+fn print_fwft(features: &[fwft::Feature], errors: &[i64], values: &[i64]) {
+    println!("{}:", gettext("Firmware Features"));
+    let width = features
+        .iter()
+        .map(|feature| UnicodeWidthStr::width(feature.name.as_str()) + 2)
+        .max()
+        .unwrap_or(0)
+        .clamp(32, 48);
+    for ((feature, error), value) in features.iter().zip(errors).zip(values) {
+        let label = format!("{}:", feature.name);
+        let status = if *error != 0 {
+            gettext("Not supported")
+        } else {
+            match feature.kind {
+                fwft::Kind::Boolean => gettext(if *value != 0 {
+                    "Supported"
+                } else {
+                    "Not supported"
+                }),
+                fwft::Kind::Pmlen => value.to_string(),
+            }
+        };
+        print_status(&label, &status, width);
+    }
 }

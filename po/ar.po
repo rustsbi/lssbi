@@ -49,6 +49,18 @@ msgid "SBI implementation version"
 msgstr "إصدار تنفيذ SBI"
 
 #: src/driver.rs
+msgid "Machine vendor ID"
+msgstr "معرّف مورّد الجهاز"
+
+#: src/driver.rs
+msgid "Machine architecture ID"
+msgstr "معرّف بنية الجهاز"
+
+#: src/driver.rs
+msgid "Machine implementation ID"
+msgstr "معرّف تنفيذ الجهاز"
+
+#: src/driver.rs
 msgid "SBI extensions"
 msgstr "امتدادات SBI"
 
@@ -175,3 +187,27 @@ msgstr "إيقاف التشغيل القديم"
 #: src/vuln.rs
 msgid "PMU2 Crash"
 msgstr "تعطل PMU2"
+
+#: src/fwft.rs
+msgid "Misaligned Exception Delegation"
+msgstr "تفويض استثناء الوصول غير المحاذي"
+
+#: src/fwft.rs
+msgid "Landing Pad"
+msgstr "منطقة الهبوط"
+
+#: src/fwft.rs
+msgid "Shadow Stack"
+msgstr "المكدس الظلي"
+
+#: src/fwft.rs
+msgid "Double Trap"
+msgstr "الفخ المزدوج"
+
+#: src/fwft.rs
+msgid "PTE A/D Hardware Updating"
+msgstr "تحديث عتادي لبتات A/D في PTE"
+
+#: src/fwft.rs
+msgid "Pointer Masking PMLEN"
+msgstr "PMLEN لإخفاء المؤشر"

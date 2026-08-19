@@ -23,6 +23,10 @@ All notable changes to this project will be documented in this file.
 - Localize extension names and report a supported or not-supported status for
   every probed extension.
 - Report OpenSBI PMU2 Crash (CVE-2025-63913) exposure from the firmware version.
+- Query and localize all six standard FWFT firmware feature configurations.
+- Report `mvendorid`, `marchid`, and `mimpid`, decoding every registered
+  open-source `marchid` to its canonical project name and known `mvendorid`
+  values to JEP106 manufacturer names.
 
 ### Changed
 

@@ -49,6 +49,18 @@ msgid "SBI implementation version"
 msgstr "Версия реализации SBI"
 
 #: src/driver.rs
+msgid "Machine vendor ID"
+msgstr "Идентификатор производителя машины"
+
+#: src/driver.rs
+msgid "Machine architecture ID"
+msgstr "Идентификатор архитектуры машины"
+
+#: src/driver.rs
+msgid "Machine implementation ID"
+msgstr "Идентификатор реализации машины"
+
+#: src/driver.rs
 msgid "SBI extensions"
 msgstr "Расширения SBI"
 
@@ -175,3 +187,27 @@ msgstr "Устаревшее выключение"
 #: src/vuln.rs
 msgid "PMU2 Crash"
 msgstr "Сбой PMU2"
+
+#: src/fwft.rs
+msgid "Misaligned Exception Delegation"
+msgstr "Делегирование исключений невыровненного доступа"
+
+#: src/fwft.rs
+msgid "Landing Pad"
+msgstr "Посадочная площадка"
+
+#: src/fwft.rs
+msgid "Shadow Stack"
+msgstr "Теневой стек"
+
+#: src/fwft.rs
+msgid "Double Trap"
+msgstr "Двойная ловушка"
+
+#: src/fwft.rs
+msgid "PTE A/D Hardware Updating"
+msgstr "Аппаратное обновление битов A/D PTE"
+
+#: src/fwft.rs
+msgid "Pointer Masking PMLEN"
+msgstr "PMLEN маскирования указателей"
