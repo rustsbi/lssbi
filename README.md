@@ -30,6 +30,16 @@ sudo ./install.sh
 The defaults are `PREFIX=/usr/local`, `PROFILE=debug`, and `ADMIN_GROUP=sudo`;
 packagers may also set `DESTDIR`. The installed executable has mode `4750`.
 
+## Build and install with release
+
+```sh
+cargo build --release
+sudo PROFILE=release ./install.sh
+```
+
+`PROFILE=release` installs the executable and gettext catalogs from
+`target/release`.
+
 ## Usage
 
 ```sh

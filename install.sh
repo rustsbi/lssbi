@@ -101,5 +101,6 @@ for language in $languages; do
     install_file 0644 root "$source" "$destination/sbi-info.mo"
 done
 
-install_file 4750 "$admin_group" "$binary" "$sbin_dir/sbi-info"
+install_file 0750 "$admin_group" "$binary" "$sbin_dir/sbi-info"
+chmod 4750 "$sbin_dir/sbi-info"
 printf 'Installed %s\n' "$sbin_dir/sbi-info"
