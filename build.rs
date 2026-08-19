@@ -41,6 +41,15 @@ fn main() {
         .status()
         .expect("failed to invoke the kernel module build");
     assert!(status.success(), "kernel module build failed");
+
+    let status = Command::new(env::var_os("STRIP").unwrap_or_else(|| "strip".into()))
+        .arg("--strip-debug")
+        .arg("-o")
+        .arg(out_dir.join("sbi_probe.ko"))
+        .arg(kernel_dir.join("sbi_probe.ko"))
+        .status()
+        .expect("failed to strip the kernel module");
+    assert!(status.success(), "kernel module stripping failed");
 }
 
 fn compile_translations(manifest_dir: &Path, out_dir: &Path) {

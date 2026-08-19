@@ -21,7 +21,7 @@ use unicode_width::UnicodeWidthStr;
 
 const MODULE_NAME: &str = "sbi_probe";
 const TEXT_DOMAIN: &str = "lssbi";
-const EMBEDDED_MODULE: &[u8] = include_bytes!("../kernel/sbi_probe.ko");
+const EMBEDDED_MODULE: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/sbi_probe.ko"));
 
 unsafe extern "C" {
     fn misc_conv(

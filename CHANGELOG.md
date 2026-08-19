@@ -31,6 +31,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Rename the project, binary, PAM service, and gettext domain to `lssbi`.
+- Strip debug information from the embedded kernel module and optimize release
+  builds for size.
 
 ### Fixed
 

@@ -13,8 +13,9 @@ cargo build
 cargo run
 ```
 
-The build targets the running kernel, embeds `sbi_probe.ko`, and compiles the
-gettext catalogs. Rebuild after a kernel upgrade.
+The build targets the running kernel, strips debug information from the embedded
+copy of `sbi_probe.ko`, and compiles the gettext catalogs. Rebuild after a kernel
+upgrade.
 
 ## Install
 
@@ -37,7 +38,8 @@ sudo PROFILE=release ./install.sh
 ```
 
 `PROFILE=release` installs the executable and gettext catalogs from
-`target/release`.
+`target/release`. The release profile optimizes and strips the executable for
+size.
 
 ## Usage
 
