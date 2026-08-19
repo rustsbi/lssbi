@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT OR MulanPSL-2.0
+
+[package]
+name = "sbi-info"
+version = "0.1.0"
+edition = "2024"
+build = "build.rs"
+description = "Report the SBI implementation and version from RISC-V Linux"
+license = "MIT OR MulanPSL-2.0"
+readme = "README.md"
+keywords = ["riscv", "sbi", "linux"]
+categories = ["command-line-utilities", "hardware-support"]
+
+[dependencies]

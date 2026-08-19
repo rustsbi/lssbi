@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: MIT OR MulanPSL-2.0
+
+/target/
+/kernel/*.ko
+/kernel/*.o
+/kernel/.*.o
+/kernel/*.mod
+/kernel/*.mod.c
+/kernel/.*.cmd
+/kernel/Module.symvers
+/kernel/modules.order
