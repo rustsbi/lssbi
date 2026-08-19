@@ -1,14 +1,14 @@
-# Traditional Chinese translations for sbi-info.
+# Traditional Chinese translations for lssbi.
 # SPDX-License-Identifier: MIT OR MulanPSL-2.0
-# sbi-info contributors, 2026.
+# lssbi contributors, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: sbi-info 0.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/rustsbi/sbi-info/issues\n"
+"Project-Id-Version: lssbi 0.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/rustsbi/lssbi/issues\n"
 "POT-Creation-Date: 2026-08-20 00:00+0800\n"
 "PO-Revision-Date: 2026-08-20 00:00+0800\n"
-"Last-Translator: sbi-info contributors\n"
+"Last-Translator: lssbi contributors\n"
 "Language-Team: Chinese (Traditional)\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
@@ -25,8 +25,8 @@ msgid "Build complete, but this executable is not setuid root; no privileged ope
 msgstr "編譯完成，但目前的執行檔未設定 setuid-root，尚未執行任何特權操作。"
 
 #: src/driver.rs
-msgid "The module is embedded; follow the README to install it at /usr/local/sbin/sbi-info with owner root:sudo and mode 4750."
-msgstr "模組已內嵌；請依照 README 安裝至 /usr/local/sbin/sbi-info，並設定擁有者為 root:sudo、模式為 4750。"
+msgid "The module is embedded; follow the README to install it at /usr/local/sbin/lssbi with owner root:sudo and mode 4750."
+msgstr "模組已內嵌；請依照 README 安裝至 /usr/local/sbin/lssbi，並設定擁有者為 root:sudo、模式為 4750。"
 
 #: src/driver.rs
 msgid "raw"

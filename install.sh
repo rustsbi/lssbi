@@ -11,7 +11,7 @@ admin_group=${ADMIN_GROUP:-sudo}
 target_dir=${CARGO_TARGET_DIR:-target}
 
 die() {
-    printf '%s\n' "sbi-info: $*" >&2
+    printf '%s\n' "lssbi: $*" >&2
     exit 1
 }
 
@@ -36,9 +36,9 @@ fi
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 cd "$script_dir"
 
-binary=$target_dir/$profile/sbi-info
+binary=$target_dir/$profile/lssbi
 locale_root=$target_dir/$profile/locale
-pam_source=pam/sbi-info
+pam_source=pam/lssbi
 linguas=po/LINGUAS
 
 [ -f "$binary" ] || die "missing $binary; run cargo build first"
@@ -50,7 +50,7 @@ for language in $languages; do
     case $language in
         *[!A-Za-z0-9_.@-]*) die "invalid locale in $linguas: $language" ;;
     esac
-    catalog=$locale_root/$language/LC_MESSAGES/sbi-info.mo
+    catalog=$locale_root/$language/LC_MESSAGES/lssbi.mo
     [ -f "$catalog" ] || die "missing $catalog; run cargo build first"
 done
 
@@ -92,15 +92,15 @@ if [ -n "$destdir" ]; then
     install_dir 0755 "$pam_destination"
 fi
 
-install_file 0644 root "$pam_source" "$pam_destination/sbi-info"
+install_file 0644 root "$pam_source" "$pam_destination/lssbi"
 
 for language in $languages; do
-    source=$locale_root/$language/LC_MESSAGES/sbi-info.mo
+    source=$locale_root/$language/LC_MESSAGES/lssbi.mo
     destination=$locale_destination/$language/LC_MESSAGES
     install_dir 0755 "$destination"
-    install_file 0644 root "$source" "$destination/sbi-info.mo"
+    install_file 0644 root "$source" "$destination/lssbi.mo"
 done
 
-install_file 0750 "$admin_group" "$binary" "$sbin_dir/sbi-info"
-chmod 4750 "$sbin_dir/sbi-info"
-printf 'Installed %s\n' "$sbin_dir/sbi-info"
+install_file 0750 "$admin_group" "$binary" "$sbin_dir/lssbi"
+chmod 4750 "$sbin_dir/lssbi"
+printf 'Installed %s\n' "$sbin_dir/lssbi"

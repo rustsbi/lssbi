@@ -19,7 +19,7 @@ use std::path::PathBuf;
 use std::ptr;
 
 const MODULE_NAME: &str = "sbi_probe";
-const TEXT_DOMAIN: &str = "sbi-info";
+const TEXT_DOMAIN: &str = "lssbi";
 const EMBEDDED_MODULE: &[u8] = include_bytes!("../kernel/sbi_probe.ko");
 
 unsafe extern "C" {
@@ -133,7 +133,7 @@ fn print_install_instructions() {
     println!(
         "{}",
         gettext(
-            "The module is embedded; follow the README to install it at /usr/local/sbin/sbi-info with owner root:sudo and mode 4750."
+            "The module is embedded; follow the README to install it at /usr/local/sbin/lssbi with owner root:sudo and mode 4750."
         )
     );
 }
@@ -182,7 +182,7 @@ fn authenticate(username: &CString) -> Result<PamSession, String> {
     // pam_end, and handle is initialized as required by pam_start.
     let mut status = unsafe {
         pam_start(
-            c"sbi-info".as_ptr(),
+            c"lssbi".as_ptr(),
             username.as_ptr(),
             &conversation,
             &mut handle,

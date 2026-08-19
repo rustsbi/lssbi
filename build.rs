@@ -61,7 +61,7 @@ fn compile_translations(manifest_dir: &Path, out_dir: &Path) {
             .join("locale")
             .join(language)
             .join("LC_MESSAGES")
-            .join("sbi-info.mo");
+            .join("lssbi.mo");
         println!("cargo:rerun-if-changed={}", input.display());
         fs::create_dir_all(output.parent().unwrap()).expect("failed to create locale directory");
         polib::mo_file::compile_from_po(&input, &output)

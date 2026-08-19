@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
   Simplified Chinese.
 - Explain the privilege requirement only when PAM requests a password.
 
+### Changed
+
+- Rename the project, binary, PAM service, and gettext domain to `lssbi`.
+
 ### Fixed
 
 - Apply the executable's setuid mode after setting its ownership so mode `4750`

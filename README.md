@@ -1,15 +1,14 @@
 <!-- SPDX-License-Identifier: MIT OR MulanPSL-2.0 -->
 
-# sbi-info
+# lssbi
 
-`sbi-info` reports the SBI specification version, implementation ID, and
-firmware version from RISC-V Linux without kernel-log access.
+`lssbi` lists information about the active RISC-V SBI environment.
 
 ## Build
 
 ```sh
-git clone https://github.com/rustsbi/sbi-info.git
-cd sbi-info
+git clone https://github.com/rustsbi/lssbi.git
+cd lssbi
 cargo build
 cargo run
 ```
@@ -43,9 +42,9 @@ sudo PROFILE=release ./install.sh
 ## Usage
 
 ```sh
-sbi-info
-sbi-info --help
-sbi-info --version
+lssbi
+lssbi --help
+lssbi --version
 ```
 
 Help and version output exit before PAM authentication. Invoking the program
@@ -59,7 +58,7 @@ SBI implementation: OpenSBI (ID 0x1)
 SBI implementation version: v1.6 (raw 0x10006)
 ```
 
-Output follows the invoking user's locale. Use `LC_ALL=C sbi-info` to force
+Output follows the invoking user's locale. Use `LC_ALL=C lssbi` to force
 English.
 
 ## Translation
@@ -85,12 +84,12 @@ such as `fr` are also used by regional locales through gettext fallback.
 ## Design
 
 Kbuild compiles the small C probe because the target kernel does not enable
-Rust support. `include_bytes!` embeds the module in `sbi-info`; gettext selects
+Rust support. `include_bytes!` embeds the module in `lssbi`; gettext selects
 messages from the current locale. After PAM authentication, `init_module` loads
 the probe directly from memory. The program reads three read-only values from
 sysfs and immediately calls `delete_module`.
 
-The `sbi-info` PAM service uses `pam_timestamp` for a root-owned, per-terminal
+The `lssbi` PAM service uses `pam_timestamp` for a root-owned, per-terminal
 authentication cache with a five-minute timeout.
 
 There is no external module path and no runtime `.ko` file to replace. The
@@ -99,7 +98,7 @@ root-owned and not writable by unprivileged users.
 
 ## Security
 
-`sbi-info` is setuid root because module loading requires `CAP_SYS_MODULE`.
+`lssbi` is setuid root because module loading requires `CAP_SYS_MODULE`.
 Review changes before installation. Systems using `nosuid`, kernel lockdown,
 mandatory module signatures, or disabled module loading may reject it.
 

@@ -1,9 +1,9 @@
 [package]
-name = "sbi-info"
+name = "lssbi"
 version = "0.0.0"
 edition = "2024"
 build = "build.rs"
-description = "Report the SBI implementation and version from RISC-V Linux"
+description = "List information about the active RISC-V SBI environment."
 authors = ["Zhouqi Jiang <luojia@rustsbi.com>"]
 license = "MIT OR MulanPSL-2.0"
 readme = "README.md"

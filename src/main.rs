@@ -3,7 +3,7 @@
 #![cfg_attr(not(target_arch = "riscv64"), allow(dead_code))]
 
 #[cfg(not(target_arch = "riscv64"))]
-compile_error!("sbi-info is intentionally restricted to riscv64 Linux");
+compile_error!("lssbi is intentionally restricted to riscv64 Linux");
 
 mod driver;
 mod sbi_impl;
@@ -23,7 +23,7 @@ struct Cli {}
 fn main() {
     Cli::parse();
     if let Err(error) = driver::run() {
-        eprintln!("sbi-info: {error}");
+        eprintln!("lssbi: {error}");
         std::process::exit(1);
     }
 }

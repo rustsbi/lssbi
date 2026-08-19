@@ -1,14 +1,14 @@
-# Arabic translations for sbi-info.
+# Arabic translations for lssbi.
 # SPDX-License-Identifier: MIT OR MulanPSL-2.0
-# sbi-info contributors, 2026.
+# lssbi contributors, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: sbi-info 0.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/rustsbi/sbi-info/issues\n"
+"Project-Id-Version: lssbi 0.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/rustsbi/lssbi/issues\n"
 "POT-Creation-Date: 2026-08-20 00:00+0800\n"
 "PO-Revision-Date: 2026-08-20 00:00+0800\n"
-"Last-Translator: sbi-info contributors\n"
+"Last-Translator: lssbi contributors\n"
 "Language-Team: Arabic\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -25,8 +25,8 @@ msgid "Build complete, but this executable is not setuid root; no privileged ope
 msgstr "اكتمل البناء، لكن هذا الملف التنفيذي لا يملك صلاحية setuid root؛ لم تُنفَّذ أي عملية ذات امتيازات."
 
 #: src/driver.rs
-msgid "The module is embedded; follow the README to install it at /usr/local/sbin/sbi-info with owner root:sudo and mode 4750."
-msgstr "الوحدة مضمّنة؛ اتبع ملف README لتثبيتها في /usr/local/sbin/sbi-info بملكية root:sudo والوضع 4750."
+msgid "The module is embedded; follow the README to install it at /usr/local/sbin/lssbi with owner root:sudo and mode 4750."
+msgstr "الوحدة مضمّنة؛ اتبع ملف README لتثبيتها في /usr/local/sbin/lssbi بملكية root:sudo والوضع 4750."
 
 #: src/driver.rs
 msgid "raw"
