@@ -29,6 +29,12 @@ unsafe extern "C" {
 }
 
 pub(crate) fn run() -> Result<(), String> {
+    // Match the invoking user's locale before PAM translates its messages.
+    // SAFETY: run is called once, before any PAM transaction or thread exists.
+    unsafe {
+        libc::setlocale(libc::LC_ALL, c"".as_ptr());
+    }
+
     let (real_uid, effective_uid) = (Uid::current(), Uid::effective());
 
     if !effective_uid.is_root() {
@@ -60,7 +66,7 @@ pub(crate) fn run() -> Result<(), String> {
 
 fn print_install_instructions() {
     println!("编译完成，但当前文件没有 setuid-root，尚未执行任何特权操作。");
-    println!("模块已内联；请按 README 将本程序安装到 root 管理的目录，并设置 root:sudo、4750。");
+    println!("模块已内联；请按 README 安装到 /usr/local/sbin/sbi-info，并设置 root:sudo、4750。");
 }
 
 fn verify_privileged_install() -> Result<(), String> {

@@ -24,11 +24,11 @@ Create the root-owned directory and copy `target/debug/sbi-info` into it with
 is controlled by the build user.
 
 ```sh
-sudo install -d -o root -g root -m 0755 /usr/local/libexec/sbi-info
+sudo install -d -o root -g root -m 0755 /usr/local/sbin
 sudo install -o root -g sudo -m 0750 \
   target/debug/sbi-info \
-  /usr/local/libexec/sbi-info/sbi-info
-sudo chmod 4750 /usr/local/libexec/sbi-info/sbi-info
+  /usr/local/sbin/sbi-info
+sudo chmod 4750 /usr/local/sbin/sbi-info
 ```
 
 Replace the `sudo` group if your system uses a different administrative group.
@@ -37,9 +37,9 @@ The installed mode should be `-rwsr-x---` (`root:sudo`, `4750`).
 ## Usage
 
 ```sh
-/usr/local/libexec/sbi-info/sbi-info
-/usr/local/libexec/sbi-info/sbi-info --help
-/usr/local/libexec/sbi-info/sbi-info --version
+/usr/local/sbin/sbi-info
+/usr/local/sbin/sbi-info --help
+/usr/local/sbin/sbi-info --version
 ```
 
 Help and version output exit before PAM authentication. Invoking the program
