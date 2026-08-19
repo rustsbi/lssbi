@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT OR MulanPSL-2.0
 
 use crate::sbi_impl;
+use gettextrs::{bind_textdomain_codeset, bindtextdomain, gettext, textdomain};
 use libc::{c_int, c_void};
 use nix::sys::signal::{SigSet, SigmaskHow};
 use nix::unistd::{Uid, User};
@@ -17,6 +18,7 @@ use std::path::PathBuf;
 use std::ptr;
 
 const MODULE_NAME: &str = "sbi_probe";
+const TEXT_DOMAIN: &str = "sbi-info";
 const EMBEDDED_MODULE: &[u8] = include_bytes!("../kernel/sbi_probe.ko");
 
 unsafe extern "C" {
@@ -34,6 +36,7 @@ pub(crate) fn run() -> Result<(), String> {
     unsafe {
         libc::setlocale(libc::LC_ALL, c"".as_ptr());
     }
+    init_gettext()?;
 
     let (real_uid, effective_uid) = (Uid::current(), Uid::effective());
 
@@ -64,9 +67,41 @@ pub(crate) fn run() -> Result<(), String> {
     Ok(())
 }
 
+fn init_gettext() -> Result<(), String> {
+    let executable = fs::canonicalize("/proc/self/exe")
+        .map_err(|error| format!("cannot resolve the running executable: {error}"))?;
+    let executable_dir = executable
+        .parent()
+        .ok_or_else(|| "the running executable has no parent directory".to_owned())?;
+    let locale_dir = match executable_dir.file_name().and_then(|name| name.to_str()) {
+        Some("bin" | "sbin") => executable_dir
+            .parent()
+            .ok_or_else(|| "the executable directory has no installation prefix".to_owned())?
+            .join("share/locale"),
+        _ => executable_dir.join("locale"),
+    };
+
+    bindtextdomain(TEXT_DOMAIN, &locale_dir)
+        .map_err(|error| format!("cannot bind the translation directory: {error}"))?;
+    bind_textdomain_codeset(TEXT_DOMAIN, "UTF-8")
+        .map_err(|error| format!("cannot select the translation encoding: {error}"))?;
+    textdomain(TEXT_DOMAIN).map_err(|error| format!("cannot select the text domain: {error}"))?;
+    Ok(())
+}
+
 fn print_install_instructions() {
-    println!("编译完成，但当前文件没有 setuid-root，尚未执行任何特权操作。");
-    println!("模块已内联；请按 README 安装到 /usr/local/sbin/sbi-info，并设置 root:sudo、4750。");
+    println!(
+        "{}",
+        gettext(
+            "Build complete, but this executable is not setuid root; no privileged operation was performed."
+        )
+    );
+    println!(
+        "{}",
+        gettext(
+            "The module is embedded; follow the README to install it at /usr/local/sbin/sbi-info with owner root:sudo and mode 4750."
+        )
+    );
 }
 
 fn verify_privileged_install() -> Result<(), String> {
@@ -234,13 +269,19 @@ fn print_result(spec_raw: i64, impl_id: i64, impl_version: i64) {
     let implementation = impl_id as usize;
     let version = impl_version as usize;
 
-    println!("SBI specification: v{spec} (raw {spec_raw:#x})");
+    let raw = gettext("raw");
     println!(
-        "SBI implementation: {} (ID {implementation:#x})",
+        "{}: v{spec} ({raw} {spec_raw:#x})",
+        gettext("SBI specification")
+    );
+    println!(
+        "{}: {} (ID {implementation:#x})",
+        gettext("SBI implementation"),
         sbi_impl::name(implementation)
     );
     println!(
-        "SBI implementation version: v{} (raw {version:#x})",
+        "{}: v{} ({raw} {version:#x})",
+        gettext("SBI implementation version"),
         sbi_impl::version(implementation, version)
     );
 }

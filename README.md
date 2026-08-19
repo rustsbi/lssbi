@@ -14,8 +14,8 @@ cargo build
 cargo run
 ```
 
-The build targets the running kernel and embeds `sbi_probe.ko` in the Rust
-executable. Rebuild after a kernel upgrade.
+The build targets the running kernel, embeds `sbi_probe.ko`, and compiles the
+gettext catalogs. Rebuild after a kernel upgrade.
 
 ## Install
 
@@ -25,6 +25,11 @@ is controlled by the build user.
 
 ```sh
 sudo install -d -o root -g root -m 0755 /usr/local/sbin
+sudo install -d -o root -g root -m 0755 \
+  /usr/local/share/locale/zh_CN/LC_MESSAGES
+sudo install -o root -g root -m 0644 \
+  target/debug/locale/zh_CN/LC_MESSAGES/sbi-info.mo \
+  /usr/local/share/locale/zh_CN/LC_MESSAGES/sbi-info.mo
 sudo install -o root -g sudo -m 0750 \
   target/debug/sbi-info \
   /usr/local/sbin/sbi-info
@@ -37,9 +42,9 @@ The installed mode should be `-rwsr-x---` (`root:sudo`, `4750`).
 ## Usage
 
 ```sh
-/usr/local/sbin/sbi-info
-/usr/local/sbin/sbi-info --help
-/usr/local/sbin/sbi-info --version
+sbi-info
+sbi-info --help
+sbi-info --version
 ```
 
 Help and version output exit before PAM authentication. Invoking the program
@@ -51,6 +56,15 @@ SBI specification: v2.0 (raw 0x2000000)
 SBI implementation: OpenSBI (ID 0x1)
 SBI implementation version: v1.6 (raw 0x10006)
 ```
+
+Output follows the invoking user's locale. Use `LC_ALL=C sbi-info` to force
+English.
+
+## Translation
+
+Gettext sources follow the conventional `po/` layout: `LINGUAS` lists locales,
+`POTFILES.in` lists translatable sources, and `<locale>.po` contains each
+translation. Cargo compiles them into `target/<profile>/locale`.
 
 ## Requirements
 
@@ -64,9 +78,10 @@ SBI implementation version: v1.6 (raw 0x10006)
 ## Design
 
 Kbuild compiles the small C probe because the target kernel does not enable
-Rust support. `include_bytes!` embeds the module in `sbi-info`; after PAM
-authentication, `init_module` loads it directly from memory. The program reads
-three read-only values from sysfs and immediately calls `delete_module`.
+Rust support. `include_bytes!` embeds the module in `sbi-info`; gettext selects
+messages from the current locale. After PAM authentication, `init_module` loads
+the probe directly from memory. The program reads three read-only values from
+sysfs and immediately calls `delete_module`.
 
 There is no external module path and no runtime `.ko` file to replace. The
 program verifies that its installed executable and parent directories are

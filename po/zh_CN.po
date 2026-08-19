@@ -1,0 +1,41 @@
+# Simplified Chinese translations for sbi-info.
+# SPDX-License-Identifier: MIT OR MulanPSL-2.0
+# Zhouqi Jiang <luojia@rustsbi.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sbi-info 0.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/rustsbi/sbi-info/issues\n"
+"POT-Creation-Date: 2026-08-20 00:00+0800\n"
+"PO-Revision-Date: 2026-08-20 00:00+0800\n"
+"Last-Translator: Zhouqi Jiang <luojia@rustsbi.com>\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: src/driver.rs
+msgid "Build complete, but this executable is not setuid root; no privileged operation was performed."
+msgstr "编译完成，但当前文件没有 setuid-root，尚未执行任何特权操作。"
+
+#: src/driver.rs
+msgid "The module is embedded; follow the README to install it at /usr/local/sbin/sbi-info with owner root:sudo and mode 4750."
+msgstr "模块已内联；请按 README 安装到 /usr/local/sbin/sbi-info，并设置 root:sudo、4750。"
+
+#: src/driver.rs
+msgid "raw"
+msgstr "原始值"
+
+#: src/driver.rs
+msgid "SBI specification"
+msgstr "SBI 规范版本"
+
+#: src/driver.rs
+msgid "SBI implementation"
+msgstr "SBI 实现"
+
+#: src/driver.rs
+msgid "SBI implementation version"
+msgstr "SBI 实现版本"
