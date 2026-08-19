@@ -5,7 +5,14 @@
 #[cfg(not(target_arch = "riscv64"))]
 compile_error!("sbi-info is intentionally restricted to riscv64 Linux");
 
-use std::ffi::{CStr, CString, c_char, c_int, c_long, c_void};
+use libc::{c_int, c_void};
+use nix::sys::signal::{SigSet, SigmaskHow};
+use nix::unistd::{Uid, User};
+use pam_sys::{
+    PAM_SUCCESS, pam_acct_mgmt, pam_authenticate, pam_conv, pam_end, pam_handle_t, pam_message,
+    pam_response, pam_start, pam_strerror,
+};
+use std::ffi::{CStr, CString};
 use std::fs;
 use std::io;
 use std::os::unix::fs::MetadataExt;
@@ -15,86 +22,13 @@ use std::ptr;
 const MODULE_NAME: &str = "sbi_probe";
 const EMBEDDED_MODULE: &[u8] = include_bytes!("../kernel/sbi_probe.ko");
 
-// asm-generic syscall numbers, used by riscv64 Linux.
-const SYS_INIT_MODULE: c_long = 105;
-const SYS_DELETE_MODULE: c_long = 106;
-
-const PAM_SUCCESS: c_int = 0;
-const SIG_BLOCK: c_int = 0;
-const SIG_SETMASK: c_int = 2;
-
-#[repr(C)]
-struct PamHandle {
-    _private: [u8; 0],
-}
-
-#[repr(C)]
-struct PamMessage {
-    msg_style: c_int,
-    msg: *const c_char,
-}
-
-#[repr(C)]
-struct PamResponse {
-    resp: *mut c_char,
-    resp_retcode: c_int,
-}
-
-type PamConvFn = unsafe extern "C" fn(
-    c_int,
-    *mut *const PamMessage,
-    *mut *mut PamResponse,
-    *mut c_void,
-) -> c_int;
-
-#[repr(C)]
-struct PamConv {
-    conv: Option<PamConvFn>,
-    appdata_ptr: *mut c_void,
-}
-
-#[repr(C)]
-struct Passwd {
-    pw_name: *mut c_char,
-    pw_passwd: *mut c_char,
-    pw_uid: u32,
-    pw_gid: u32,
-    pw_gecos: *mut c_char,
-    pw_dir: *mut c_char,
-    pw_shell: *mut c_char,
-}
-
-// glibc uses 1024 signal bits for sigset_t on Linux.
-#[repr(C)]
-struct SigSet {
-    words: [u64; 16],
-}
-
 unsafe extern "C" {
-    fn getuid() -> u32;
-    fn geteuid() -> u32;
-    fn getpwuid(uid: u32) -> *mut Passwd;
-    fn syscall(number: c_long, ...) -> c_long;
-
-    fn sigfillset(set: *mut SigSet) -> c_int;
-    fn sigprocmask(how: c_int, set: *const SigSet, oldset: *mut SigSet) -> c_int;
-
     fn misc_conv(
         num_msg: c_int,
-        msg: *mut *const PamMessage,
-        response: *mut *mut PamResponse,
+        msg: *mut *const pam_message,
+        response: *mut *mut pam_response,
         appdata_ptr: *mut c_void,
     ) -> c_int;
-    fn pam_start(
-        service_name: *const c_char,
-        user: *const c_char,
-        pam_conversation: *const PamConv,
-        pamh: *mut *mut PamHandle,
-    ) -> c_int;
-    fn pam_authenticate(pamh: *mut PamHandle, flags: c_int) -> c_int;
-    fn pam_acct_mgmt(pamh: *mut PamHandle, flags: c_int) -> c_int;
-    fn pam_end(pamh: *mut PamHandle, status: c_int) -> c_int;
-    fn pam_strerror(pamh: *mut PamHandle, status: c_int) -> *const c_char;
 }
 
 fn main() {
@@ -105,17 +39,16 @@ fn main() {
 }
 
 fn run() -> Result<(), String> {
-    // SAFETY: getuid/geteuid take no pointers and have no preconditions.
-    let (real_uid, effective_uid) = unsafe { (getuid(), geteuid()) };
+    let (real_uid, effective_uid) = (Uid::current(), Uid::effective());
 
-    if effective_uid != 0 {
+    if !effective_uid.is_root() {
         print_install_instructions();
         return Ok(());
     }
 
     verify_privileged_install()?;
 
-    if real_uid != 0 {
+    if !real_uid.is_root() {
         let username = username_for_uid(real_uid)?;
         authenticate(&username)?;
     }
@@ -166,26 +99,19 @@ fn verify_privileged_install() -> Result<(), String> {
     Ok(())
 }
 
-fn username_for_uid(uid: u32) -> Result<CString, String> {
-    // SAFETY: getpwuid returns NSS-owned storage. This single-threaded program
-    // copies pw_name before invoking PAM or making another NSS call.
-    let record = unsafe { getpwuid(uid) };
-    if record.is_null() {
-        return Err(format!("no account exists for real uid {uid}"));
-    }
-    // SAFETY: a successful getpwuid result has a NUL-terminated pw_name.
-    let name = unsafe { CStr::from_ptr((*record).pw_name) }
-        .to_bytes()
-        .to_vec();
-    CString::new(name).map_err(|_| "account name contains an embedded NUL".into())
+fn username_for_uid(uid: Uid) -> Result<CString, String> {
+    let user = User::from_uid(uid)
+        .map_err(|error| format!("cannot resolve real uid {}: {error}", uid.as_raw()))?
+        .ok_or_else(|| format!("no account exists for real uid {}", uid.as_raw()))?;
+    CString::new(user.name).map_err(|_| "account name contains an embedded NUL".into())
 }
 
 fn authenticate(username: &CString) -> Result<(), String> {
-    let conversation = PamConv {
+    let conversation = pam_conv {
         conv: Some(misc_conv),
         appdata_ptr: ptr::null_mut(),
     };
-    let mut handle: *mut PamHandle = ptr::null_mut();
+    let mut handle: *mut pam_handle_t = ptr::null_mut();
 
     // SAFETY: all strings and the conversation object remain live until
     // pam_end, and handle is initialized as required by pam_start.
@@ -232,27 +158,16 @@ struct SignalMaskGuard {
 
 impl SignalMaskGuard {
     fn block_all() -> Result<Self, String> {
-        let mut all = SigSet { words: [0; 16] };
-        let mut old = SigSet { words: [0; 16] };
-        // SAFETY: both objects are valid sigset_t-compatible storage.
-        if unsafe { sigfillset(&mut all) } != 0
-            || unsafe { sigprocmask(SIG_BLOCK, &all, &mut old) } != 0
-        {
-            return Err(format!(
-                "cannot block signals: {}",
-                io::Error::last_os_error()
-            ));
-        }
+        let old = SigSet::all()
+            .thread_swap_mask(SigmaskHow::SIG_BLOCK)
+            .map_err(|error| format!("cannot block signals: {error}"))?;
         Ok(Self { old })
     }
 }
 
 impl Drop for SignalMaskGuard {
     fn drop(&mut self) {
-        // SAFETY: old was filled by sigprocmask in block_all.
-        unsafe {
-            sigprocmask(SIG_SETMASK, &self.old, ptr::null_mut());
-        }
+        let _ = self.old.thread_set_mask();
     }
 }
 
@@ -262,10 +177,10 @@ struct LoadedModule {
 
 fn load_module() -> Result<LoadedModule, String> {
     // SAFETY: the embedded byte slice and NUL-terminated parameters stay valid
-    // for this synchronous syscall; the number is riscv64 asm-generic.
+    // for this synchronous syscall.
     let result = unsafe {
-        syscall(
-            SYS_INIT_MODULE,
+        libc::syscall(
+            libc::SYS_init_module,
             EMBEDDED_MODULE.as_ptr(),
             EMBEDDED_MODULE.len(),
             c"".as_ptr(),
@@ -286,7 +201,8 @@ impl LoadedModule {
             return Ok(());
         }
         // SAFETY: the name is NUL-terminated and flags=0 requests a normal unload.
-        let result = unsafe { syscall(SYS_DELETE_MODULE, c"sbi_probe".as_ptr(), 0 as c_int) };
+        let result =
+            unsafe { libc::syscall(libc::SYS_delete_module, c"sbi_probe".as_ptr(), 0 as c_int) };
         if result != 0 {
             return Err(format!(
                 "delete_module({MODULE_NAME}) failed: {}",
