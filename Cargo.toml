@@ -4,12 +4,14 @@ version = "0.0.0"
 edition = "2024"
 build = "build.rs"
 description = "Report the SBI implementation and version from RISC-V Linux"
+authors = ["Zhouqi Jiang <luojia@rustsbi.com>"]
 license = "MIT OR MulanPSL-2.0"
 readme = "README.md"
 keywords = ["riscv", "sbi", "linux"]
 categories = ["command-line-utilities", "hardware-support"]
 
 [dependencies]
+clap = { version = "4.5", default-features = false, features = ["derive", "help", "std", "usage"] }
 libc = "0.2"
 nix = { version = "0.31.3", features = ["signal", "user"] }
 pam-sys = { package = "pam-sys2", version = "1.0.2" }

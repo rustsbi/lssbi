@@ -19,8 +19,9 @@ executable. Rebuild after a kernel upgrade.
 
 ## Install
 
-Install the executable in a root-owned directory. Do not set setuid on the copy
-under `target/`, because that directory is controlled by the build user.
+Create the root-owned directory and copy `target/debug/sbi-info` into it with
+`install`. Do not set setuid on the copy under `target/`, because that directory
+is controlled by the build user.
 
 ```sh
 sudo install -d -o root -g root -m 0755 /usr/local/libexec/sbi-info
@@ -37,16 +38,18 @@ The installed mode should be `-rwsr-x---` (`root:sudo`, `4750`).
 
 ```sh
 /usr/local/libexec/sbi-info/sbi-info
+/usr/local/libexec/sbi-info/sbi-info --help
+/usr/local/libexec/sbi-info/sbi-info --version
 ```
 
-Authenticate with the current Linux account password when prompted. Example:
+Help and version output exit before PAM authentication. Invoking the program
+without arguments runs the probe and requests the current account password:
 
 ```text
 Password:
 SBI specification: v2.0 (raw 0x2000000)
 SBI implementation: OpenSBI (ID 0x1)
-SBI implementation version: 0x10006
-OpenSBI version: v1.6
+SBI implementation version: v1.6 (raw 0x10006)
 ```
 
 ## Requirements
