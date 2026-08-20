@@ -2,6 +2,10 @@
 
 # lssbi
 
+<p align="center">
+  <img src="assets/lssbi-logo.png" alt="lssbi logo" width="640">
+</p>
+
 `lssbi` lists information about the active RISC-V SBI environment.
 
 [![crates.io](https://img.shields.io/crates/v/lssbi.svg)](https://crates.io/crates/lssbi)
