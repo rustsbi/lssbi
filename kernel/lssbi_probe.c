@@ -245,5 +245,5 @@ module_init(lssbi_probe_init);
 module_exit(lssbi_probe_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_VERSION("0.1.0");
+MODULE_VERSION("0.0.0");
 MODULE_DESCRIPTION("RISC-V SBI environment probe for lssbi");

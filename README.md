@@ -42,8 +42,8 @@ Install DKMS and the headers for the running kernel, then run:
 
 ```sh
 sudo dkms add .
-sudo dkms build lssbi/0.1.0
-sudo dkms install lssbi/0.1.0
+sudo dkms build lssbi/0.0.0
+sudo dkms install lssbi/0.0.0
 sudo modprobe lssbi_probe
 ```
 
@@ -57,7 +57,7 @@ sudo install -Dm644 modules-load.d/lssbi.conf \
 
 DKMS builds `lssbi_probe.ko` for the running kernel and rebuilds it after
 kernel upgrades. Distribution packages should install the module source and
-`dkms.conf` under `/usr/src/lssbi-0.1.0/`; a Debian package would normally
+`dkms.conf` under `/usr/src/lssbi-0.0.0/`; a Debian package would normally
 split the project into `lssbi` and `lssbi-dkms` binary packages.
 
 ## Usage
