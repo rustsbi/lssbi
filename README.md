@@ -7,6 +7,10 @@
 The current backend reads values exported by the `lssbi_probe` DKMS module.
 The command itself is unprivileged and never loads or unloads kernel modules.
 
+## Demo
+
+[![asciinema recording](https://asciinema.org/a/MJ75h7aVjugDyPkb.svg)](https://asciinema.org/a/MJ75h7aVjugDyPkb)
+
 ## Build
 
 ```sh
