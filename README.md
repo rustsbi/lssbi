@@ -4,6 +4,10 @@
 
 `lssbi` lists information about the active RISC-V SBI environment.
 
+[![crates.io](https://img.shields.io/crates/v/lssbi.svg)](https://crates.io/crates/lssbi)
+[![Documentation](https://docs.rs/lssbi/badge.svg)](https://docs.rs/lssbi)
+![License](https://img.shields.io/crates/l/lssbi.svg)
+
 The current backend reads values exported by the `lssbi_probe` DKMS module.
 The command itself is unprivileged and never loads or unloads kernel modules.
 
