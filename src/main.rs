@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: MIT OR MulanPSL-2.0
 
-#![cfg_attr(not(target_arch = "riscv64"), allow(dead_code))]
+#![cfg_attr(
+    not(all(target_arch = "riscv64", target_os = "linux")),
+    allow(dead_code)
+)]
 
-#[cfg(not(target_arch = "riscv64"))]
+#[cfg(all(not(test), not(all(target_arch = "riscv64", target_os = "linux"))))]
 compile_error!("lssbi is intentionally restricted to riscv64 Linux");
 
+mod backend;
+#[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 mod driver;
 mod fwft;
 mod marchid;
@@ -29,10 +34,25 @@ struct Cli {
     legacy: bool,
 }
 
+#[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 fn main() {
     let cli = Cli::parse();
     if let Err(error) = driver::run(cli.legacy) {
         eprintln!("lssbi: {error}");
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Cli;
+    use clap::CommandFactory;
+
+    #[test]
+    fn cli_version_matches_package_version() {
+        assert_eq!(
+            Cli::command().get_version(),
+            Some(env!("CARGO_PKG_VERSION"))
+        );
     }
 }

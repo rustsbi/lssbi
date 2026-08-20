@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: lssbi 0.0.0\n"
+"Project-Id-Version: lssbi 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rustsbi/lssbi/issues\n"
 "POT-Creation-Date: 2026-08-20 00:00+0800\n"
 "PO-Revision-Date: 2026-08-20 00:00+0800\n"
@@ -17,16 +17,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: src/driver.rs
-msgid "Querying SBI information requires elevated privileges; enter your password to continue."
-msgstr "查詢 SBI 資訊需要提升權限；請輸入密碼以繼續。"
+msgid "DKMS backend unavailable: the lssbi_probe module is not loaded; run `sudo modprobe lssbi_probe`"
+msgstr "DKMS 後端無法使用：lssbi_probe 模組尚未載入；請執行 `sudo modprobe lssbi_probe`"
 
 #: src/driver.rs
-msgid "Build complete, but this executable is not setuid root; no privileged operation was performed."
-msgstr "編譯完成，但目前的執行檔未設定 setuid-root，尚未執行任何特權操作。"
-
-#: src/driver.rs
-msgid "The module is embedded; follow the README to install it at /usr/local/sbin/lssbi with owner root:sudo and mode 4750."
-msgstr "模組已內嵌；請依照 README 安裝至 /usr/local/sbin/lssbi，並設定擁有者為 root:sudo、模式為 4750。"
+msgid "Disabled"
+msgstr "已停用"
 
 #: src/driver.rs
 msgid "raw"

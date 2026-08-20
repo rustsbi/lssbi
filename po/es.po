@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: lssbi 0.0.0\n"
+"Project-Id-Version: lssbi 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rustsbi/lssbi/issues\n"
 "POT-Creation-Date: 2026-08-20 00:00+0800\n"
 "PO-Revision-Date: 2026-08-20 00:00+0800\n"
@@ -17,16 +17,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/driver.rs
-msgid "Querying SBI information requires elevated privileges; enter your password to continue."
-msgstr "Consultar la información de SBI requiere privilegios elevados; introduzca su contraseña para continuar."
+msgid "DKMS backend unavailable: the lssbi_probe module is not loaded; run `sudo modprobe lssbi_probe`"
+msgstr "El backend DKMS no está disponible: el módulo lssbi_probe no está cargado; ejecute `sudo modprobe lssbi_probe`"
 
 #: src/driver.rs
-msgid "Build complete, but this executable is not setuid root; no privileged operation was performed."
-msgstr "La compilación ha terminado, pero este ejecutable no tiene setuid root; no se realizó ninguna operación con privilegios."
-
-#: src/driver.rs
-msgid "The module is embedded; follow the README to install it at /usr/local/sbin/lssbi with owner root:sudo and mode 4750."
-msgstr "El módulo está integrado; siga las instrucciones del README para instalarlo en /usr/local/sbin/lssbi con propietario root:sudo y modo 4750."
+msgid "Disabled"
+msgstr "Deshabilitado"
 
 #: src/driver.rs
 msgid "raw"

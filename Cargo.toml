@@ -1,6 +1,6 @@
 [package]
 name = "lssbi"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2024"
 build = "build.rs"
 description = "List information about the active RISC-V SBI environment."
@@ -11,21 +11,13 @@ keywords = ["riscv", "sbi", "linux"]
 categories = ["command-line-utilities", "hardware-support"]
 
 [dependencies]
-clap = { version = "4.5", default-features = false, features = ["derive", "help", "std", "usage"] }
-gettext-rs = { version = "0.8", features = ["gettext-system"] }
+clap = { version = "4.5", default-features = false, features = ["cargo", "derive", "help", "std", "usage"] }
 jep106 = { version = "0.3", default-features = false }
-libc = "0.2"
-nix = { version = "0.31.3", features = ["signal", "user"] }
-pam-sys = { package = "pam-sys2", version = "1.0.2" }
-sbi-spec = { version = "0.0.9", features = ["legacy"] }
+sbi-spec = "0.0.9"
 unicode-width = "0.2"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+gettext-rs = { version = "0.8", features = ["gettext-system"] }
 
 [build-dependencies]
 polib = "0.3"
-
-[profile.release]
-opt-level = "z"
-lto = true
-codegen-units = 1
-panic = "abort"
-strip = "symbols"

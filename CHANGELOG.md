@@ -8,33 +8,27 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Report the SBI specification, implementation ID, and firmware version from
-  RISC-V Linux without kernel-log access.
-- Embed the kernel probe in the executable and unload it immediately after
-  collecting the SBI information.
-- Provide CLI help and version output, gettext localization, PAM authentication
-  caching, and a POSIX installer with selectable debug and release profiles.
-- Add Arabic, French, Russian, Spanish, and Traditional Chinese translations,
-  covering all six official United Nations languages alongside English and
-  Simplified Chinese.
-- Explain the privilege requirement only when PAM requests a password.
-- Probe and list implemented SBI 3.0 extensions using IDs provided by
-  `sbi-spec`, with deprecated legacy extensions available through `--legacy`.
-- Localize extension names and report a supported or not-supported status for
-  every probed extension.
-- Report OpenSBI PMU2 Crash (CVE-2025-63913) exposure from the firmware version.
-- Query and localize all six standard FWFT firmware feature configurations.
-- Report `mvendorid`, `marchid`, and `mimpid`, decoding every registered
-  open-source `marchid` to its canonical project name and known `mvendorid`
-  values to JEP106 manufacturer names.
+- Add a DKMS backend that builds `lssbi_probe` for each installed kernel and
+  exports SBI information through read-only module parameters.
+- Add a live FWFT sample parameter that executes all six standard FWFT `GET`
+  calls on one CPU every time it is read.
+- Report RISC-V machine vendor, architecture, and implementation identifiers.
+- Probe 16 current SBI extensions and optionally nine legacy calls with
+  `--legacy`.
+- Report OpenSBI PMU2 Crash (CVE-2025-63913) exposure.
+- Add a backend boundary for a future native Linux sysfs implementation.
+- Provide CLI help and version output, gettext localization, and a POSIX
+  installer with selectable debug and release profiles.
+- Add complete Arabic, French, Russian, Spanish, Simplified Chinese, and
+  Traditional Chinese translations for all displayed information and errors.
 
 ### Changed
 
-- Rename the project, binary, PAM service, and gettext domain to `lssbi`.
-- Strip debug information from the embedded kernel module and optimize release
-  builds for size.
+- Rename the project and command from `sbi-info` to `lssbi`.
+- Build the command independently from the running kernel.
+- Keep the probe module loaded so the command can run without privileges.
 
-### Fixed
+### Removed
 
-- Apply the executable's setuid mode after setting its ownership so mode `4750`
-  is preserved across `install` implementations.
+- Remove the embedded kernel module, setuid installation, and project-owned
+  PAM authentication policy.

@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: MIT OR MulanPSL-2.0
 
-use gettextrs::gettext;
 use sbi_spec::base::impl_id::OPEN_SBI;
-
-pub(crate) fn pmu2_crash_name() -> String {
-    gettext("PMU2 Crash")
-}
 
 pub(crate) fn pmu2_crash(impl_id: usize, version: usize) -> bool {
     // Fixed in OpenSBI v1.7 by 69a0f0245f39ea3af4685cab4cb2dda90acd17cd.
