@@ -144,6 +144,14 @@ msgstr "监管者态软件事件"
 msgid "Firmware Features"
 msgstr "固件特性"
 
+#: src/driver.rs
+msgid "Linux CPU"
+msgstr "Linux 处理器"
+
+#: src/driver.rs
+msgid "SBI hart"
+msgstr "SBI 硬件线程"
+
 #: src/sbi_ext.rs
 msgid "Debug Triggers"
 msgstr "调试触发器"

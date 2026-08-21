@@ -21,7 +21,7 @@ enum ExtensionProbeStatus {
     Error(i64),
 }
 
-pub(crate) fn run(legacy: bool) -> Result<(), String> {
+pub(crate) fn run(legacy: bool, cpu: Option<usize>) -> Result<(), String> {
     // SAFETY: run is called once from the single-threaded program entry point,
     // before any other code can read or change the process-wide locale.
     unsafe {
@@ -29,7 +29,7 @@ pub(crate) fn run(legacy: bool) -> Result<(), String> {
     }
     init_gettext()?;
 
-    let information = backend::probe().map_err(localize_probe_error)?;
+    let information = backend::probe(cpu).map_err(localize_probe_error)?;
     print_result(information, legacy);
     Ok(())
 }
@@ -112,7 +112,7 @@ fn print_result(information: backend::SbiInformation, legacy: bool) {
 
     print_extensions(&information.extensions, legacy);
     print_vulnerabilities(impl_id, impl_version);
-    print_fwft(&information.fwft.results);
+    print_fwft(&information.fwft);
 }
 
 fn print_extensions(results: &[backend::SbiCallResult; sbi_ext::EXTENSIONS.len()], legacy: bool) {
@@ -185,12 +185,23 @@ fn print_vulnerabilities(impl_id: usize, impl_version: usize) {
     print_status(&label, &status, 32);
 }
 
-fn print_fwft(results: &[backend::SbiCallResult; fwft::FEATURES.len()]) {
-    println!("{}:", gettext("Firmware Features"));
+fn print_fwft(information: &backend::FwftInformation) {
+    let cpu = gettext("Linux CPU");
+    let hart = gettext("SBI hart");
+    println!(
+        "{} ({cpu} #{}, {hart} #{}):",
+        gettext("Firmware Features"),
+        information.cpu,
+        information.hart_id
+    );
     let names = fwft::FEATURES.map(|feature| gettext(feature.message));
     let width = status_width(&names);
 
-    for ((name, feature), result) in names.iter().zip(fwft::FEATURES.iter()).zip(results) {
+    for ((name, feature), result) in names
+        .iter()
+        .zip(fwft::FEATURES.iter())
+        .zip(&information.results)
+    {
         let status = if result.error != 0 {
             gettext("Not supported")
         } else {

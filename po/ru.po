@@ -144,6 +144,14 @@ msgstr "Программные события супервизора"
 msgid "Firmware Features"
 msgstr "Возможности прошивки"
 
+#: src/driver.rs
+msgid "Linux CPU"
+msgstr "процессор Linux"
+
+#: src/driver.rs
+msgid "SBI hart"
+msgstr "аппаратный поток SBI"
+
 #: src/sbi_ext.rs
 msgid "Debug Triggers"
 msgstr "Отладочные триггеры"

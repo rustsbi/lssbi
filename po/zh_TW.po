@@ -144,6 +144,14 @@ msgstr "監督者模式軟體事件"
 msgid "Firmware Features"
 msgstr "韌體功能"
 
+#: src/driver.rs
+msgid "Linux CPU"
+msgstr "Linux 處理器"
+
+#: src/driver.rs
+msgid "SBI hart"
+msgstr "SBI 硬體執行緒"
+
 #: src/sbi_ext.rs
 msgid "Debug Triggers"
 msgstr "除錯觸發器"

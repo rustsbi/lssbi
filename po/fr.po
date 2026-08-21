@@ -144,6 +144,14 @@ msgstr "Événements logiciels du superviseur"
 msgid "Firmware Features"
 msgstr "Fonctionnalités du micrologiciel"
 
+#: src/driver.rs
+msgid "Linux CPU"
+msgstr "processeur Linux"
+
+#: src/driver.rs
+msgid "SBI hart"
+msgstr "thread matériel SBI"
+
 #: src/sbi_ext.rs
 msgid "Debug Triggers"
 msgstr "Déclencheurs de débogage"

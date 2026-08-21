@@ -144,6 +144,14 @@ msgstr "Eventos de software del supervisor"
 msgid "Firmware Features"
 msgstr "Funciones del firmware"
 
+#: src/driver.rs
+msgid "Linux CPU"
+msgstr "CPU de Linux"
+
+#: src/driver.rs
+msgid "SBI hart"
+msgstr "hilo de hardware SBI"
+
 #: src/sbi_ext.rs
 msgid "Debug Triggers"
 msgstr "Disparadores de depuración"

@@ -13,6 +13,7 @@ pub(crate) struct SbiCallResult {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) struct FwftInformation {
     pub(crate) cpu: u32,
+    pub(crate) hart_id: u64,
     pub(crate) results: [SbiCallResult; fwft::FEATURES.len()],
 }
 
@@ -34,6 +35,6 @@ pub(crate) enum ProbeError {
     Message(String),
 }
 
-pub(crate) fn probe() -> Result<SbiInformation, ProbeError> {
-    dkms::probe()
+pub(crate) fn probe(cpu: Option<usize>) -> Result<SbiInformation, ProbeError> {
+    dkms::probe(cpu)
 }

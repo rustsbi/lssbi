@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Add `--cpu <N>` for selecting the Linux CPU used by live FWFT queries and
+  report the sampled Linux CPU ID and SBI hart ID.
+
 ### Fixed
 
 - Distinguish unsupported SBI extensions from failed probes and retain

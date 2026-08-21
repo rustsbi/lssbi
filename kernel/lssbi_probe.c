@@ -5,6 +5,7 @@
 #include <linux/module.h>
 #include <linux/smp.h>
 #include <asm/sbi.h>
+#include <asm/smp.h>
 
 #define LSSBI_EXT_TIME		0x54494D45UL
 #define LSSBI_EXT_IPI		0x735049UL
@@ -168,13 +169,15 @@ static const struct kernel_param_ops lssbi_extensions_ops = {
 module_param_cb(extensions, &lssbi_extensions_ops, NULL, 0444);
 MODULE_PARM_DESC(extensions, "SBI extension probe results");
 
-static unsigned int lssbi_probe_fwft_features(struct lssbi_sbiret *results)
+static unsigned int lssbi_probe_fwft_features(struct lssbi_sbiret *results,
+					      unsigned long *hartid)
 {
 	unsigned int cpu;
 	unsigned int index;
 
 	/* All six standard FWFT features are local, so sample one hart. */
 	cpu = get_cpu();
+	*hartid = cpuid_to_hartid_map(cpu);
 	for (index = 0; index < ARRAY_SIZE(lssbi_fwft_features); index++)
 		results[index] = lssbi_ecall(LSSBI_EXT_FWFT,
 						   LSSBI_EXT_FWFT_GET,
@@ -188,15 +191,16 @@ static int lssbi_param_get_fwft(char *buffer,
 				const struct kernel_param *parameter)
 {
 	struct lssbi_sbiret results[ARRAY_SIZE(lssbi_fwft_features)];
+	unsigned long hartid;
 	unsigned int cpu;
 	unsigned int index;
 	int length = 0;
 
 	(void)parameter;
-	cpu = lssbi_probe_fwft_features(results);
+	cpu = lssbi_probe_fwft_features(results, &hartid);
 
 	length += scnprintf(buffer + length, LSSBI_FWFT_BUFFER_SIZE - length,
-			    "cpu %u\n", cpu);
+			    "cpu %u\nhart %lu\n", cpu, hartid);
 	for (index = 0; index < ARRAY_SIZE(lssbi_fwft_features); index++)
 		length += scnprintf(buffer + length,
 				    LSSBI_FWFT_BUFFER_SIZE - length,

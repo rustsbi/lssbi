@@ -162,6 +162,7 @@ dependencies = [
  "clap",
  "gettext-rs",
  "jep106",
+ "libc",
  "polib",
  "sbi-spec",
  "unicode-width",

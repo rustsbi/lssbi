@@ -144,6 +144,14 @@ msgstr "أحداث برمجية للمشرف"
 msgid "Firmware Features"
 msgstr "ميزات البرنامج الثابت"
 
+#: src/driver.rs
+msgid "Linux CPU"
+msgstr "معالج لينكس"
+
+#: src/driver.rs
+msgid "SBI hart"
+msgstr "خيط العتاد SBI"
+
 #: src/sbi_ext.rs
 msgid "Debug Triggers"
 msgstr "مشغلات التصحيح"

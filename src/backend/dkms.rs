@@ -7,7 +7,7 @@ use std::path::Path;
 
 const PARAMETER_DIRECTORY: &str = "/sys/module/lssbi_probe/parameters";
 
-pub(super) fn probe() -> Result<SbiInformation, ProbeError> {
+pub(super) fn probe(cpu: Option<usize>) -> Result<SbiInformation, ProbeError> {
     let directory = Path::new(PARAMETER_DIRECTORY);
     if !directory.is_dir() {
         return Err(ProbeError::ModuleNotLoaded);
@@ -21,7 +21,7 @@ pub(super) fn probe() -> Result<SbiInformation, ProbeError> {
         marchid: read_parameter(directory, "marchid")?,
         mimpid: read_parameter(directory, "mimpid")?,
         extensions: read_extensions(directory)?,
-        fwft: read_fwft(directory)?,
+        fwft: read_fwft(directory, cpu)?,
     })
 }
 
@@ -50,7 +50,10 @@ fn read_extensions(
     })
 }
 
-fn read_fwft(directory: &Path) -> Result<FwftInformation, ProbeError> {
+fn read_fwft(directory: &Path, cpu: Option<usize>) -> Result<FwftInformation, ProbeError> {
+    if let Some(cpu) = cpu {
+        select_cpu(cpu)?;
+    }
     let path = directory.join("fwft");
     let text = fs::read_to_string(&path)
         .map_err(|error| ProbeError::Message(format!("cannot read {}: {error}", path.display())))?;
@@ -61,26 +64,68 @@ fn read_fwft(directory: &Path) -> Result<FwftInformation, ProbeError> {
 
 fn parse_fwft(text: &str) -> Result<FwftInformation, String> {
     let mut lines = text.lines();
-    let cpu_line = lines
-        .next()
-        .ok_or_else(|| "missing CPU record".to_owned())?;
-    let mut cpu_fields = cpu_line.split_ascii_whitespace();
-    if cpu_fields.next() != Some("cpu") {
-        return Err("the first record is not a CPU record".to_owned());
-    }
-    let cpu = cpu_fields
-        .next()
-        .ok_or_else(|| "missing CPU number".to_owned())?
-        .parse()
-        .map_err(|error| format!("invalid CPU number: {error}"))?;
-    if cpu_fields.next().is_some() {
-        return Err("unexpected field in CPU record".to_owned());
-    }
+    let cpu = parse_id_record(&mut lines, "cpu")?
+        .try_into()
+        .map_err(|_| "CPU number is out of range".to_owned())?;
+    let hart_id = parse_id_record(&mut lines, "hart")?;
 
     let keys = fwft::FEATURES.map(|feature| feature.key);
     let remaining = lines.collect::<Vec<_>>().join("\n");
     let results = parse_records(&remaining, &keys)?;
-    Ok(FwftInformation { cpu, results })
+    Ok(FwftInformation {
+        cpu,
+        hart_id,
+        results,
+    })
+}
+
+fn parse_id_record(lines: &mut std::str::Lines<'_>, key: &str) -> Result<u64, String> {
+    let mut fields = lines
+        .next()
+        .ok_or_else(|| format!("missing {key} record"))?
+        .split_ascii_whitespace();
+    if fields.next() != Some(key) {
+        return Err(format!("expected {key} record"));
+    }
+    let value = fields
+        .next()
+        .ok_or_else(|| format!("missing {key} value"))?
+        .parse()
+        .map_err(|error| format!("invalid {key} value: {error}"))?;
+    if fields.next().is_some() {
+        return Err(format!("unexpected field in {key} record"));
+    }
+    Ok(value)
+}
+
+#[cfg(target_os = "linux")]
+fn select_cpu(cpu: usize) -> Result<(), ProbeError> {
+    if cpu >= libc::CPU_SETSIZE as usize {
+        return Err(ProbeError::Message(format!(
+            "cannot select Linux CPU {cpu}: CPU number exceeds the affinity set"
+        )));
+    }
+
+    // SAFETY: cpu_set_t is a plain bitset and the zeroed value is valid.
+    let mut set = unsafe { std::mem::zeroed::<libc::cpu_set_t>() };
+    // SAFETY: cpu was checked against CPU_SETSIZE above.
+    unsafe { libc::CPU_SET(cpu, &mut set) };
+    // SAFETY: set is initialized and its exact size is passed to the kernel.
+    if unsafe { libc::sched_setaffinity(0, std::mem::size_of_val(&set), &set) } == 0 {
+        Ok(())
+    } else {
+        Err(ProbeError::Message(format!(
+            "cannot select Linux CPU {cpu}: {}",
+            std::io::Error::last_os_error()
+        )))
+    }
+}
+
+#[cfg(not(target_os = "linux"))]
+fn select_cpu(cpu: usize) -> Result<(), ProbeError> {
+    Err(ProbeError::Message(format!(
+        "cannot select Linux CPU {cpu} on this platform"
+    )))
 }
 
 fn parse_records<const N: usize>(
@@ -132,6 +177,7 @@ mod tests {
 
     const FWFT_SAMPLE: &str = "\
 cpu 3
+hart 7
 misaligned_exc_deleg 0 1
 landing_pad -2 0
 shadow_stack 0 0
@@ -159,6 +205,7 @@ pointer_masking_pmlen 0 7
             parse_fwft(FWFT_SAMPLE),
             Ok(FwftInformation {
                 cpu: 3,
+                hart_id: 7,
                 results: [
                     SbiCallResult { error: 0, value: 1 },
                     SbiCallResult {

@@ -76,6 +76,7 @@ split the project into `lssbi` and `lssbi-dkms` binary packages.
 
 ```sh
 lssbi
+lssbi --cpu 3
 lssbi --legacy
 lssbi --help
 lssbi --version
@@ -109,7 +110,7 @@ SBI extensions:
   Message Proxy:                  Supported
 Vulnerabilities:
   PMU2 Crash (CVE-2025-63913):    Affected
-Firmware Features:
+Firmware Features (Linux CPU #0, SBI hart #0):
   Misaligned Exception Delegation: Not supported
   Landing Pad:                    Not supported
   Shadow Stack:                   Not supported
@@ -119,6 +120,9 @@ Firmware Features:
 ```
 
 `--legacy` appends probes for the nine deprecated SBI v0.1 calls.
+
+`--cpu N` pins the live per-hart FWFT query to Linux CPU `N`. Without it, the
+output identifies whichever CPU serviced the parameter read.
 
 If the module is not loaded, `lssbi` reports the unavailable DKMS backend and
 suggests `sudo modprobe lssbi_probe`.
@@ -177,6 +181,7 @@ One read returns a single live sample in the following stable format:
 
 ```text
 cpu <linux-cpu-id>
+hart <sbi-hart-id>
 misaligned_exc_deleg <sbi-error> <value>
 landing_pad <sbi-error> <value>
 shadow_stack <sbi-error> <value>
@@ -186,11 +191,17 @@ pointer_masking_pmlen <sbi-error> <value>
 ```
 
 The getter prevents CPU migration while making the six calls because these
-standard FWFT features are local to a hart and may change at runtime. The
-reported CPU identifies the hart sampled by that invocation. `lssbi` reads the
-parameter once each time it runs and preserves each call's SBI error separately
-from its value. The CLI converts those raw results into localized status text
-instead of exposing an unexplained SBI error or hexadecimal zero.
+standard FWFT features are local to a hart and may change at runtime. It reports
+both the Linux CPU ID and the kernel's corresponding SBI hart ID. `--cpu N`
+narrows the command's CPU affinity before reading the parameter; without it,
+the scheduler selects the sampled CPU. `lssbi` reads the parameter once each
+time it runs and preserves each call's SBI error separately from its value. The
+CLI converts those raw results into localized status text instead of exposing
+an unexplained SBI error or hexadecimal zero.
+
+SBI does not define hardware discovery, so `lssbi` does not try to enumerate
+CPUs from SBI data.
+
 The six `GET` calls are consecutive but not an atomic firmware transaction;
 FWFT defines only a single-feature `GET` operation.
 
@@ -205,6 +216,32 @@ getter.
 The backend boundary is kept separate from presentation. A future native Linux
 sysfs backend can be preferred automatically while retaining the DKMS backend
 as a compatibility fallback.
+
+## Development notes
+
+### Refresh the DKMS module
+
+DKMS caches builds by module version. When kernel module output changes without
+a version bump, rebuilding the existing `lssbi/0.0.0` entry may keep the old
+module. Remove that development entry before rebuilding it:
+
+```sh
+sudo modprobe -r lssbi_probe
+sudo dkms remove lssbi/0.0.0 --all
+sudo dkms add .
+sudo dkms build lssbi/0.0.0
+sudo dkms install lssbi/0.0.0
+sudo modprobe lssbi_probe
+```
+
+After a version bump, replace `0.0.0` with the version in `dkms.conf`. Confirm
+that the live FWFT parameter uses the current record format before testing the
+command:
+
+```sh
+sed -n '1,2p' /sys/module/lssbi_probe/parameters/fwft
+cargo run -- --cpu 3
+```
 
 ## Security
 

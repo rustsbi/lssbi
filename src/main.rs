@@ -29,6 +29,10 @@ use clap::Parser;
     help_template = "{before-help}{name} {version}\n{author-with-newline}{about-with-newline}\n{usage-heading} {usage}\n\n{all-args}{after-help}"
 )]
 struct Cli {
+    /// Run live per-hart probes on Linux CPU N.
+    #[arg(long, value_name = "N")]
+    cpu: Option<usize>,
+
     /// Probe deprecated legacy SBI extensions.
     #[arg(long)]
     legacy: bool,
@@ -37,7 +41,7 @@ struct Cli {
 #[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 fn main() {
     let cli = Cli::parse();
-    if let Err(error) = driver::run(cli.legacy) {
+    if let Err(error) = driver::run(cli.legacy, cli.cpu) {
         eprintln!("lssbi: {error}");
         std::process::exit(1);
     }
@@ -46,7 +50,13 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::Cli;
-    use clap::CommandFactory;
+    use clap::{CommandFactory, Parser};
+
+    #[test]
+    fn parses_cpu_selection() {
+        let cli = Cli::try_parse_from(["lssbi", "--cpu", "3"]).unwrap();
+        assert_eq!(cli.cpu, Some(3));
+    }
 
     #[test]
     fn cli_version_matches_package_version() {
