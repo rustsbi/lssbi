@@ -12,6 +12,7 @@ mod backend;
 #[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 mod driver;
 mod fwft;
+mod json;
 mod marchid;
 mod mvendorid;
 mod sbi_ext;
@@ -33,6 +34,10 @@ struct Cli {
     #[arg(long, value_name = "N", allow_negative_numbers = true)]
     cpu: Option<String>,
 
+    /// Print a stable, locale-independent JSON document.
+    #[arg(long)]
+    json: bool,
+
     /// Probe deprecated legacy SBI extensions.
     #[arg(long)]
     legacy: bool,
@@ -41,7 +46,7 @@ struct Cli {
 #[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 fn main() {
     let cli = Cli::parse();
-    if let Err(error) = driver::run(cli.legacy, cli.cpu.as_deref()) {
+    if let Err(error) = driver::run(cli.legacy, cli.cpu.as_deref(), cli.json) {
         eprintln!("lssbi: {error}");
         std::process::exit(1);
     }
@@ -56,6 +61,12 @@ mod tests {
     fn parses_cpu_selection() {
         let cli = Cli::try_parse_from(["lssbi", "--cpu", "3"]).unwrap();
         assert_eq!(cli.cpu.as_deref(), Some("3"));
+    }
+
+    #[test]
+    fn parses_json_output() {
+        let cli = Cli::try_parse_from(["lssbi", "--json"]).unwrap();
+        assert!(cli.json);
     }
 
     #[test]

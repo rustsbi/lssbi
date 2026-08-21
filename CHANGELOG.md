@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Add `--json` with a versioned, locale-independent schema that preserves raw
+  SBI values and probe error/value pairs.
 - Add `--cpu <N>` for selecting the Linux CPU used by live FWFT queries and
   report the sampled Linux CPU ID and SBI hart ID.
 

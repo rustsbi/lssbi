@@ -77,6 +77,7 @@ split the project into `lssbi` and `lssbi-dkms` binary packages.
 ```sh
 lssbi
 lssbi --cpu 3
+lssbi --json
 lssbi --legacy
 lssbi --help
 lssbi --version
@@ -120,6 +121,22 @@ Firmware Features (Linux CPU #0, SBI hart #0):
 ```
 
 `--legacy` appends probes for the nine deprecated SBI v0.1 calls.
+
+`--json` emits JSON schema version 1. Its field names and extension/feature keys
+are stable English identifiers and never follow the user's locale. Version and
+machine-identity objects retain the numeric `raw` value, while every extension
+and FWFT probe retains its numeric `error` and `value` fields. The schema has
+these top-level fields:
+
+- `schema_version`
+- `sbi_specification`
+- `sbi_implementation`
+- `machine`
+- `extensions`
+- `vulnerabilities`
+- `firmware_features`
+
+`--json` can be combined with `--cpu N` and `--legacy`.
 
 `--cpu N` pins the live per-hart FWFT query to Linux CPU `N`. Without it, the
 output identifies whichever CPU serviced the parameter read.

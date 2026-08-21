@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT OR MulanPSL-2.0
 
-use crate::{backend, fwft, marchid, mvendorid, sbi_ext, sbi_impl, vuln};
+use crate::{backend, fwft, json, marchid, mvendorid, sbi_ext, sbi_impl, vuln};
 use gettextrs::{
     LocaleCategory, bind_textdomain_codeset, bindtextdomain, gettext, setlocale, textdomain,
 };
@@ -21,7 +21,7 @@ enum ExtensionProbeStatus {
     Error(i64),
 }
 
-pub(crate) fn run(legacy: bool, cpu: Option<&str>) -> Result<(), String> {
+pub(crate) fn run(legacy: bool, cpu: Option<&str>, json_output: bool) -> Result<(), String> {
     // SAFETY: run is called once from the single-threaded program entry point,
     // before any other code can read or change the process-wide locale.
     unsafe {
@@ -31,8 +31,12 @@ pub(crate) fn run(legacy: bool, cpu: Option<&str>) -> Result<(), String> {
 
     let cpu = cpu.map(parse_cpu).transpose()?;
     let information = backend::probe(cpu).map_err(localize_probe_error)?;
-    print_result(information, legacy);
-    Ok(())
+    if json_output {
+        json::print(&information, legacy)
+    } else {
+        print_result(information, legacy);
+        Ok(())
+    }
 }
 
 fn localize_probe_error(error: backend::ProbeError) -> String {

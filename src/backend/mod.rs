@@ -4,7 +4,7 @@ mod dkms;
 
 use crate::{fwft, sbi_ext};
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize)]
 pub(crate) struct SbiCallResult {
     pub(crate) error: i64,
     pub(crate) value: u64,
