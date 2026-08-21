@@ -85,11 +85,12 @@ fn print_result(information: backend::SbiInformation, legacy: bool) {
         gettext("SBI implementation"),
         sbi_impl::name(impl_id)
     );
-    println!(
-        "{}: v{} ({raw} {impl_version:#x})",
-        gettext("SBI implementation version"),
-        sbi_impl::version(impl_id, impl_version)
-    );
+    let impl_version_label = gettext("SBI implementation version");
+    if let Some(version) = sbi_impl::version(impl_id, impl_version) {
+        println!("{impl_version_label}: v{version} ({raw} {impl_version:#x})");
+    } else {
+        println!("{impl_version_label}: {raw} {impl_version:#x}");
+    }
 
     if let Some(vendor) = mvendorid::vendor_name(mvendorid) {
         println!(

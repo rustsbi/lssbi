@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 
 - Distinguish unsupported SBI extensions from failed probes and retain
   implementation-defined nonzero probe values in command output.
+- Format known SBI implementation version encodings, including the RustSBI
+  patch component, while leaving unknown encodings undecoded.
 
 ## [0.0.0] - 2026-08-20
 
