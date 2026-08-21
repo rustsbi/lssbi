@@ -80,6 +80,14 @@ msgstr "Pris en charge"
 msgid "Not supported"
 msgstr "Non pris en charge"
 
+#: src/driver.rs
+msgid "Error"
+msgstr "Erreur"
+
+#: src/driver.rs
+msgid "probe value"
+msgstr "valeur de détection"
+
 #: src/sbi_ext.rs
 msgid "Base"
 msgstr "Base"

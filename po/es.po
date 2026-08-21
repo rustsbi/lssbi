@@ -80,6 +80,14 @@ msgstr "Admitida"
 msgid "Not supported"
 msgstr "No admitida"
 
+#: src/driver.rs
+msgid "Error"
+msgstr "Error"
+
+#: src/driver.rs
+msgid "probe value"
+msgstr "valor de sondeo"
+
 #: src/sbi_ext.rs
 msgid "Base"
 msgstr "Base"

@@ -4,11 +4,22 @@ use crate::{backend, fwft, marchid, mvendorid, sbi_ext, sbi_impl, vuln};
 use gettextrs::{
     LocaleCategory, bind_textdomain_codeset, bindtextdomain, gettext, setlocale, textdomain,
 };
-use sbi_spec::base::Version;
+use sbi_spec::{
+    base::Version,
+    binary::{Error as SbiError, SbiRegister, SbiRet},
+};
 use std::fs;
 use unicode_width::UnicodeWidthStr;
 
 const TEXT_DOMAIN: &str = "lssbi";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ExtensionProbeStatus {
+    NotSupported,
+    Supported,
+    SupportedWithValue(u64),
+    Error(i64),
+}
 
 pub(crate) fn run(legacy: bool) -> Result<(), String> {
     // SAFETY: run is called once from the single-threaded program entry point,
@@ -113,12 +124,52 @@ fn print_extensions(results: &[backend::SbiCallResult; sbi_ext::EXTENSIONS.len()
     let width = status_width(&names);
 
     for (name, result) in names.iter().zip(&results[..extensions.len()]) {
-        let status = if result.error == 0 && result.value != 0 {
-            gettext("Supported")
-        } else {
-            gettext("Not supported")
+        let status = match classify_extension_probe(result) {
+            ExtensionProbeStatus::NotSupported => gettext("Not supported"),
+            ExtensionProbeStatus::Supported => gettext("Supported"),
+            ExtensionProbeStatus::SupportedWithValue(value) => format!(
+                "{} ({} {value:#x})",
+                gettext("Supported"),
+                gettext("probe value")
+            ),
+            ExtensionProbeStatus::Error(error) => {
+                format!("{}: {} ({error})", gettext("Error"), sbi_error_name(error))
+            }
         };
         print_status(&format!("{name}:"), &status, width);
+    }
+}
+
+fn classify_extension_probe(result: &backend::SbiCallResult) -> ExtensionProbeStatus {
+    if result.error != 0 {
+        ExtensionProbeStatus::Error(result.error)
+    } else {
+        match result.value {
+            0 => ExtensionProbeStatus::NotSupported,
+            1 => ExtensionProbeStatus::Supported,
+            value => ExtensionProbeStatus::SupportedWithValue(value),
+        }
+    }
+}
+
+fn sbi_error_name(error: i64) -> &'static str {
+    match <i64 as SbiRegister>::into_result(SbiRet { error, value: 0 }) {
+        Ok(_) => "SBI_SUCCESS",
+        Err(SbiError::Failed) => "SBI_ERR_FAILED",
+        Err(SbiError::NotSupported) => "SBI_ERR_NOT_SUPPORTED",
+        Err(SbiError::InvalidParam) => "SBI_ERR_INVALID_PARAM",
+        Err(SbiError::Denied) => "SBI_ERR_DENIED",
+        Err(SbiError::InvalidAddress) => "SBI_ERR_INVALID_ADDRESS",
+        Err(SbiError::AlreadyAvailable) => "SBI_ERR_ALREADY_AVAILABLE",
+        Err(SbiError::AlreadyStarted) => "SBI_ERR_ALREADY_STARTED",
+        Err(SbiError::AlreadyStopped) => "SBI_ERR_ALREADY_STOPPED",
+        Err(SbiError::NoShmem) => "SBI_ERR_NO_SHMEM",
+        Err(SbiError::InvalidState) => "SBI_ERR_INVALID_STATE",
+        Err(SbiError::BadRange) => "SBI_ERR_BAD_RANGE",
+        Err(SbiError::Timeout) => "SBI_ERR_TIMEOUT",
+        Err(SbiError::Io) => "SBI_ERR_IO",
+        Err(SbiError::DeniedLocked) => "SBI_ERR_DENIED_LOCKED",
+        Err(SbiError::Custom(_)) => "SBI_ERR_UNKNOWN",
     }
 }
 
@@ -170,4 +221,52 @@ fn status_width(names: &[String]) -> usize {
 fn print_status(label: &str, status: &str, width: usize) {
     let padding = width.saturating_sub(UnicodeWidthStr::width(label)).max(1);
     println!("  {label}{}{status}", " ".repeat(padding));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{ExtensionProbeStatus, classify_extension_probe, sbi_error_name};
+    use crate::backend::SbiCallResult;
+
+    #[test]
+    fn classifies_extension_probe_results() {
+        assert_eq!(
+            classify_extension_probe(&SbiCallResult { error: 0, value: 0 }),
+            ExtensionProbeStatus::NotSupported
+        );
+        assert_eq!(
+            classify_extension_probe(&SbiCallResult { error: 0, value: 1 }),
+            ExtensionProbeStatus::Supported
+        );
+        assert_eq!(
+            classify_extension_probe(&SbiCallResult { error: 0, value: 2 }),
+            ExtensionProbeStatus::SupportedWithValue(2)
+        );
+        assert_eq!(
+            classify_extension_probe(&SbiCallResult {
+                error: -4,
+                value: 0,
+            }),
+            ExtensionProbeStatus::Error(-4)
+        );
+    }
+
+    #[test]
+    fn names_standard_and_unknown_sbi_errors() {
+        assert_eq!(sbi_error_name(-1), "SBI_ERR_FAILED");
+        assert_eq!(sbi_error_name(-2), "SBI_ERR_NOT_SUPPORTED");
+        assert_eq!(sbi_error_name(-3), "SBI_ERR_INVALID_PARAM");
+        assert_eq!(sbi_error_name(-4), "SBI_ERR_DENIED");
+        assert_eq!(sbi_error_name(-5), "SBI_ERR_INVALID_ADDRESS");
+        assert_eq!(sbi_error_name(-6), "SBI_ERR_ALREADY_AVAILABLE");
+        assert_eq!(sbi_error_name(-7), "SBI_ERR_ALREADY_STARTED");
+        assert_eq!(sbi_error_name(-8), "SBI_ERR_ALREADY_STOPPED");
+        assert_eq!(sbi_error_name(-9), "SBI_ERR_NO_SHMEM");
+        assert_eq!(sbi_error_name(-10), "SBI_ERR_INVALID_STATE");
+        assert_eq!(sbi_error_name(-11), "SBI_ERR_BAD_RANGE");
+        assert_eq!(sbi_error_name(-12), "SBI_ERR_TIMEOUT");
+        assert_eq!(sbi_error_name(-13), "SBI_ERR_IO");
+        assert_eq!(sbi_error_name(-14), "SBI_ERR_DENIED_LOCKED");
+        assert_eq!(sbi_error_name(-99), "SBI_ERR_UNKNOWN");
+    }
 }

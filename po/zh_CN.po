@@ -80,6 +80,14 @@ msgstr "支持"
 msgid "Not supported"
 msgstr "不支持"
 
+#: src/driver.rs
+msgid "Error"
+msgstr "错误"
+
+#: src/driver.rs
+msgid "probe value"
+msgstr "探测值"
+
 #: src/sbi_ext.rs
 msgid "Base"
 msgstr "基础"

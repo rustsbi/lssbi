@@ -80,6 +80,14 @@ msgstr "مدعوم"
 msgid "Not supported"
 msgstr "غير مدعوم"
 
+#: src/driver.rs
+msgid "Error"
+msgstr "خطأ"
+
+#: src/driver.rs
+msgid "probe value"
+msgstr "قيمة الفحص"
+
 #: src/sbi_ext.rs
 msgid "Base"
 msgstr "الأساسي"

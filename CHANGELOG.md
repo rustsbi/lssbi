@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- Distinguish unsupported SBI extensions from failed probes and retain
+  implementation-defined nonzero probe values in command output.
+
+## [0.0.0] - 2026-08-20
+
 ### Added
 
 - Add a DKMS backend that builds `lssbi_probe` for each installed kernel and
@@ -32,3 +39,6 @@ All notable changes to this project will be documented in this file.
 
 - Remove the embedded kernel module, setuid installation, and project-owned
   PAM authentication policy.
+
+[Unreleased]: https://github.com/rustsbi/lssbi/compare/v0.0.0...HEAD
+[0.0.0]: https://github.com/rustsbi/lssbi/releases/tag/v0.0.0

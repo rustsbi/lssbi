@@ -80,6 +80,14 @@ msgstr "Поддерживается"
 msgid "Not supported"
 msgstr "Не поддерживается"
 
+#: src/driver.rs
+msgid "Error"
+msgstr "Ошибка"
+
+#: src/driver.rs
+msgid "probe value"
+msgstr "значение проверки"
+
 #: src/sbi_ext.rs
 msgid "Base"
 msgstr "Базовое расширение"
