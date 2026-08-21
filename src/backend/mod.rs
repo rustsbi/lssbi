@@ -32,6 +32,9 @@ pub(crate) struct SbiInformation {
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum ProbeError {
     ModuleNotLoaded,
+    CpuOutOfRange { cpu: usize, max: usize },
+    CpuNotAllowed(usize),
+    CpuAffinity { cpu: usize, error: String },
     Message(String),
 }
 

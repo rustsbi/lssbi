@@ -30,8 +30,8 @@ use clap::Parser;
 )]
 struct Cli {
     /// Run live per-hart probes on Linux CPU N.
-    #[arg(long, value_name = "N")]
-    cpu: Option<usize>,
+    #[arg(long, value_name = "N", allow_negative_numbers = true)]
+    cpu: Option<String>,
 
     /// Probe deprecated legacy SBI extensions.
     #[arg(long)]
@@ -41,7 +41,7 @@ struct Cli {
 #[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 fn main() {
     let cli = Cli::parse();
-    if let Err(error) = driver::run(cli.legacy, cli.cpu) {
+    if let Err(error) = driver::run(cli.legacy, cli.cpu.as_deref()) {
         eprintln!("lssbi: {error}");
         std::process::exit(1);
     }
@@ -55,7 +55,15 @@ mod tests {
     #[test]
     fn parses_cpu_selection() {
         let cli = Cli::try_parse_from(["lssbi", "--cpu", "3"]).unwrap();
-        assert_eq!(cli.cpu, Some(3));
+        assert_eq!(cli.cpu.as_deref(), Some("3"));
+    }
+
+    #[test]
+    fn defers_invalid_cpu_values_until_localized_validation() {
+        for value in ["-1", "first"] {
+            let cli = Cli::try_parse_from(["lssbi", "--cpu", value]).unwrap();
+            assert_eq!(cli.cpu.as_deref(), Some(value));
+        }
     }
 
     #[test]

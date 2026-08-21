@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Localize CPU selection errors and explain malformed, out-of-range, offline,
+  and affinity-restricted values.
 - Distinguish unsupported SBI extensions from failed probes and retain
   implementation-defined nonzero probe values in command output.
 - Format known SBI implementation version encodings, including the RustSBI

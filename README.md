@@ -123,6 +123,8 @@ Firmware Features (Linux CPU #0, SBI hart #0):
 
 `--cpu N` pins the live per-hart FWFT query to Linux CPU `N`. Without it, the
 output identifies whichever CPU serviced the parameter read.
+Malformed or unavailable values identify the rejected CPU and explain whether
+it is outside the supported range, offline, or restricted by affinity/cpuset.
 
 If the module is not loaded, `lssbi` reports the unavailable DKMS backend and
 suggests `sudo modprobe lssbi_probe`.

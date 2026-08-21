@@ -21,6 +21,22 @@ msgid "DKMS backend unavailable: the lssbi_probe module is not loaded; run `sudo
 msgstr "DKMS 后端不可用：lssbi_probe 模块尚未加载；请运行 `sudo modprobe lssbi_probe`"
 
 #: src/driver.rs
+msgid "Invalid Linux CPU value \"{value}\": expected a non-negative decimal integer"
+msgstr "Linux 处理器值 “{value}” 无效：应为非负十进制整数"
+
+#: src/driver.rs
+msgid "Linux CPU #{cpu} exceeds the supported affinity range (maximum #{max})"
+msgstr "Linux 处理器 #{cpu} 超出支持的处理器亲和性范围（最大编号为 #{max}）"
+
+#: src/driver.rs
+msgid "Linux CPU #{cpu} is not in this process's allowed CPU set; it may be offline or excluded by an affinity/cpuset restriction"
+msgstr "Linux 处理器 #{cpu} 不可用：可能已离线，或不允许当前进程使用"
+
+#: src/driver.rs
+msgid "Cannot select Linux CPU #{cpu}: {error}"
+msgstr "无法选择 Linux 处理器 #{cpu}：{error}"
+
+#: src/driver.rs
 msgid "Disabled"
 msgstr "已禁用"
 

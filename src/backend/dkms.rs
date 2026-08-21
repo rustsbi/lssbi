@@ -101,23 +101,38 @@ fn parse_id_record(lines: &mut std::str::Lines<'_>, key: &str) -> Result<u64, St
 #[cfg(target_os = "linux")]
 fn select_cpu(cpu: usize) -> Result<(), ProbeError> {
     if cpu >= libc::CPU_SETSIZE as usize {
-        return Err(ProbeError::Message(format!(
-            "cannot select Linux CPU {cpu}: CPU number exceeds the affinity set"
-        )));
+        return Err(ProbeError::CpuOutOfRange {
+            cpu,
+            max: libc::CPU_SETSIZE as usize - 1,
+        });
     }
 
     // SAFETY: cpu_set_t is a plain bitset and the zeroed value is valid.
     let mut set = unsafe { std::mem::zeroed::<libc::cpu_set_t>() };
+    // SAFETY: set is initialized and its exact size is passed to the kernel.
+    if unsafe { libc::sched_getaffinity(0, std::mem::size_of_val(&set), &mut set) } != 0 {
+        return Err(ProbeError::CpuAffinity {
+            cpu,
+            error: std::io::Error::last_os_error().to_string(),
+        });
+    }
     // SAFETY: cpu was checked against CPU_SETSIZE above.
-    unsafe { libc::CPU_SET(cpu, &mut set) };
+    if !unsafe { libc::CPU_ISSET(cpu, &set) } {
+        return Err(ProbeError::CpuNotAllowed(cpu));
+    }
+    // SAFETY: cpu was checked against CPU_SETSIZE above.
+    unsafe {
+        libc::CPU_ZERO(&mut set);
+        libc::CPU_SET(cpu, &mut set);
+    }
     // SAFETY: set is initialized and its exact size is passed to the kernel.
     if unsafe { libc::sched_setaffinity(0, std::mem::size_of_val(&set), &set) } == 0 {
         Ok(())
     } else {
-        Err(ProbeError::Message(format!(
-            "cannot select Linux CPU {cpu}: {}",
-            std::io::Error::last_os_error()
-        )))
+        Err(ProbeError::CpuAffinity {
+            cpu,
+            error: std::io::Error::last_os_error().to_string(),
+        })
     }
 }
 
@@ -171,7 +186,11 @@ fn parse_records<const N: usize>(
 
 #[cfg(test)]
 mod tests {
+    #[cfg(target_os = "linux")]
+    use super::select_cpu;
     use super::{parse_fwft, parse_parameter, parse_records};
+    #[cfg(target_os = "linux")]
+    use crate::backend::ProbeError;
     use crate::backend::{FwftInformation, SbiCallResult};
     use crate::{fwft, sbi_ext};
 
@@ -249,5 +268,15 @@ pointer_masking_pmlen 0 7
         let keys = fwft::FEATURES.map(|feature| feature.key);
         assert_eq!(keys[0], "misaligned_exc_deleg");
         assert_eq!(keys[5], "pointer_masking_pmlen");
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn rejects_cpu_outside_affinity_bitset() {
+        let cpu = libc::CPU_SETSIZE as usize;
+        assert_eq!(
+            select_cpu(cpu),
+            Err(ProbeError::CpuOutOfRange { cpu, max: cpu - 1 })
+        );
     }
 }

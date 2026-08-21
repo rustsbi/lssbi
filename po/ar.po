@@ -21,6 +21,22 @@ msgid "DKMS backend unavailable: the lssbi_probe module is not loaded; run `sudo
 msgstr "واجهة DKMS الخلفية غير متاحة: وحدة lssbi_probe غير محمّلة؛ شغّل `sudo modprobe lssbi_probe`"
 
 #: src/driver.rs
+msgid "Invalid Linux CPU value \"{value}\": expected a non-negative decimal integer"
+msgstr "قيمة معالج لينكس \"{value}\" غير صالحة: يجب أن تكون عدداً صحيحاً عشرياً غير سالب"
+
+#: src/driver.rs
+msgid "Linux CPU #{cpu} exceeds the supported affinity range (maximum #{max})"
+msgstr "يتجاوز معالج لينكس #{cpu} نطاق ألفة المعالج المدعوم (الحد الأقصى #{max})"
+
+#: src/driver.rs
+msgid "Linux CPU #{cpu} is not in this process's allowed CPU set; it may be offline or excluded by an affinity/cpuset restriction"
+msgstr "معالج لينكس #{cpu} ليس ضمن مجموعة المعالجات المسموح بها لهذه العملية؛ قد يكون غير متصل أو مستبعداً بسبب قيد affinity/cpuset"
+
+#: src/driver.rs
+msgid "Cannot select Linux CPU #{cpu}: {error}"
+msgstr "تعذر اختيار معالج لينكس #{cpu}: {error}"
+
+#: src/driver.rs
 msgid "Disabled"
 msgstr "معطّل"
 

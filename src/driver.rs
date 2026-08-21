@@ -21,7 +21,7 @@ enum ExtensionProbeStatus {
     Error(i64),
 }
 
-pub(crate) fn run(legacy: bool, cpu: Option<usize>) -> Result<(), String> {
+pub(crate) fn run(legacy: bool, cpu: Option<&str>) -> Result<(), String> {
     // SAFETY: run is called once from the single-threaded program entry point,
     // before any other code can read or change the process-wide locale.
     unsafe {
@@ -29,6 +29,7 @@ pub(crate) fn run(legacy: bool, cpu: Option<usize>) -> Result<(), String> {
     }
     init_gettext()?;
 
+    let cpu = cpu.map(parse_cpu).transpose()?;
     let information = backend::probe(cpu).map_err(localize_probe_error)?;
     print_result(information, legacy);
     Ok(())
@@ -39,8 +40,29 @@ fn localize_probe_error(error: backend::ProbeError) -> String {
         backend::ProbeError::ModuleNotLoaded => gettext(
             "DKMS backend unavailable: the lssbi_probe module is not loaded; run `sudo modprobe lssbi_probe`",
         ),
+        backend::ProbeError::CpuOutOfRange { cpu, max } => gettext(
+            "Linux CPU #{cpu} exceeds the supported affinity range (maximum #{max})",
+        )
+        .replace("{cpu}", &cpu.to_string())
+        .replace("{max}", &max.to_string()),
+        backend::ProbeError::CpuNotAllowed(cpu) => gettext(
+            "Linux CPU #{cpu} is not in this process's allowed CPU set; it may be offline or excluded by an affinity/cpuset restriction",
+        )
+        .replace("{cpu}", &cpu.to_string()),
+        backend::ProbeError::CpuAffinity { cpu, error } => {
+            gettext("Cannot select Linux CPU #{cpu}: {error}")
+                .replace("{cpu}", &cpu.to_string())
+                .replace("{error}", &error)
+        }
         backend::ProbeError::Message(message) => message,
     }
+}
+
+fn parse_cpu(value: &str) -> Result<usize, String> {
+    value.parse().map_err(|_| {
+        gettext("Invalid Linux CPU value \"{value}\": expected a non-negative decimal integer")
+            .replace("{value}", value)
+    })
 }
 
 fn init_gettext() -> Result<(), String> {
@@ -237,7 +259,7 @@ fn print_status(label: &str, status: &str, width: usize) {
 
 #[cfg(test)]
 mod tests {
-    use super::{ExtensionProbeStatus, classify_extension_probe, sbi_error_name};
+    use super::{ExtensionProbeStatus, classify_extension_probe, parse_cpu, sbi_error_name};
     use crate::backend::SbiCallResult;
 
     #[test]
@@ -280,5 +302,15 @@ mod tests {
         assert_eq!(sbi_error_name(-13), "SBI_ERR_IO");
         assert_eq!(sbi_error_name(-14), "SBI_ERR_DENIED_LOCKED");
         assert_eq!(sbi_error_name(-99), "SBI_ERR_UNKNOWN");
+    }
+
+    #[test]
+    fn parses_and_explains_cpu_values() {
+        assert_eq!(parse_cpu("3"), Ok(3));
+        for value in ["-1", "first"] {
+            let error = parse_cpu(value).unwrap_err();
+            assert!(error.contains(value));
+            assert!(error.contains("non-negative decimal integer"));
+        }
     }
 }

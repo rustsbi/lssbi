@@ -21,6 +21,22 @@ msgid "DKMS backend unavailable: the lssbi_probe module is not loaded; run `sudo
 msgstr "El backend DKMS no está disponible: el módulo lssbi_probe no está cargado; ejecute `sudo modprobe lssbi_probe`"
 
 #: src/driver.rs
+msgid "Invalid Linux CPU value \"{value}\": expected a non-negative decimal integer"
+msgstr "Valor de CPU de Linux \"{value}\" no válido: se esperaba un entero decimal no negativo"
+
+#: src/driver.rs
+msgid "Linux CPU #{cpu} exceeds the supported affinity range (maximum #{max})"
+msgstr "La CPU de Linux #{cpu} supera el rango de afinidad admitido (máximo #{max})"
+
+#: src/driver.rs
+msgid "Linux CPU #{cpu} is not in this process's allowed CPU set; it may be offline or excluded by an affinity/cpuset restriction"
+msgstr "La CPU de Linux #{cpu} no está en el conjunto de CPU permitido para este proceso; puede estar fuera de línea o excluida por una restricción de afinidad/cpuset"
+
+#: src/driver.rs
+msgid "Cannot select Linux CPU #{cpu}: {error}"
+msgstr "No se puede seleccionar la CPU de Linux #{cpu}: {error}"
+
+#: src/driver.rs
 msgid "Disabled"
 msgstr "Deshabilitado"
 
