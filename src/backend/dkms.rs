@@ -251,15 +251,14 @@ pointer_masking_pmlen 0 7
         let keys = sbi_ext::EXTENSIONS.map(|extension| extension.key);
         let text = keys
             .iter()
-            .map(|key| format!("{key} 0 1"))
+            .map(|key| format!("{key} -4 9223372038331170818"))
             .collect::<Vec<_>>()
             .join("\n");
         let results = parse_records(&text, &keys).unwrap();
-        assert_eq!(results.len(), sbi_ext::EXTENSIONS.len());
         assert!(
             results
                 .iter()
-                .all(|result| result.error == 0 && result.value == 1)
+                .all(|result| { result.error == -4 && result.value == 0x8000_0000_5800_0002 })
         );
     }
 

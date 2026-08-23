@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT OR MulanPSL-2.0
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy)]
 pub(crate) enum Kind {
     Boolean,
     Pmlen,

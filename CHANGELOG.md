@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Export SBI probe values as unsigned kernel module fields so high-bit XLEN
+  values remain parseable.
 - Preserve 64-bit SBI register values exactly in JSON by encoding XLEN values as
   hexadecimal strings.
 - Localize CPU selection errors and explain malformed, out-of-range, offline,

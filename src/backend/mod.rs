@@ -10,14 +10,13 @@ pub(crate) struct SbiCallResult {
     pub(crate) value: u64,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub(crate) struct FwftInfo {
     pub(crate) cpu: u32,
     pub(crate) hart_id: u64,
     pub(crate) results: [SbiCallResult; fwft::FEATURES.len()],
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) struct SbiInfo {
     pub(crate) spec_version: u64,
     pub(crate) impl_id: u64,

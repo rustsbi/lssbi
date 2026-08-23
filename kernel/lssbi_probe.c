@@ -49,7 +49,7 @@ MODULE_PARM_DESC(mimpid, "Raw RISC-V machine implementation ID");
 
 struct lssbi_sbiret {
 	long error;
-	long value;
+	unsigned long value;
 };
 
 struct lssbi_probe_item {
@@ -128,7 +128,7 @@ static struct lssbi_sbiret lssbi_ecall(unsigned long extension_id,
 
 	return (struct lssbi_sbiret) {
 		.error = (long)a0,
-		.value = (long)a1,
+		.value = a1,
 	};
 }
 
@@ -140,7 +140,7 @@ static int lssbi_read_base(unsigned long function_id, unsigned long *value)
 	if (ret.error)
 		return -EOPNOTSUPP;
 
-	*value = (unsigned long)ret.value;
+	*value = ret.value;
 	return 0;
 }
 
@@ -154,7 +154,7 @@ static int lssbi_param_get_extensions(char *buffer,
 	for (index = 0; index < ARRAY_SIZE(lssbi_extensions); index++)
 		length += scnprintf(buffer + length,
 				    LSSBI_EXTENSIONS_BUFFER_SIZE - length,
-				    "%s %ld %ld\n",
+				    "%s %ld %lu\n",
 				    lssbi_extensions[index].name,
 				    lssbi_extension_results[index].error,
 				    lssbi_extension_results[index].value);
@@ -204,7 +204,7 @@ static int lssbi_param_get_fwft(char *buffer,
 	for (index = 0; index < ARRAY_SIZE(lssbi_fwft_features); index++)
 		length += scnprintf(buffer + length,
 				    LSSBI_FWFT_BUFFER_SIZE - length,
-				    "%s %ld %ld\n",
+				    "%s %ld %lu\n",
 				    lssbi_fwft_features[index].name,
 				    results[index].error,
 				    results[index].value);

@@ -5,109 +5,46 @@ pub(crate) struct Extension {
     pub(crate) message: &'static str,
 }
 
+impl Extension {
+    const fn new(key: &'static str, message: &'static str) -> Self {
+        Self { key, message }
+    }
+}
+
 pub(crate) const STANDARD_EXTENSION_COUNT: usize = 16;
 
 pub(crate) const EXTENSIONS: [Extension; 25] = [
-    Extension {
-        key: "base",
-        message: "Base",
-    },
-    Extension {
-        key: "time",
-        message: "Timer",
-    },
-    Extension {
-        key: "ipi",
-        message: "Inter-processor Interrupt",
-    },
-    Extension {
-        key: "rfence",
-        message: "Remote Fence",
-    },
-    Extension {
-        key: "hsm",
-        message: "Hart State Management",
-    },
-    Extension {
-        key: "srst",
-        message: "System Reset",
-    },
-    Extension {
-        key: "pmu",
-        message: "Performance Monitoring Unit",
-    },
-    Extension {
-        key: "dbcn",
-        message: "Debug Console",
-    },
-    Extension {
-        key: "susp",
-        message: "System Suspend",
-    },
-    Extension {
-        key: "cppc",
-        message: "Collab. Processor Perf. Control",
-    },
-    Extension {
-        key: "nacl",
-        message: "Nested Acceleration",
-    },
-    Extension {
-        key: "sta",
-        message: "Steal-time Accounting",
-    },
-    Extension {
-        key: "sse",
-        message: "Supervisor Software Events",
-    },
-    Extension {
-        key: "fwft",
-        message: "Firmware Features",
-    },
-    Extension {
-        key: "dbtr",
-        message: "Debug Triggers",
-    },
-    Extension {
-        key: "mpxy",
-        message: "Message Proxy",
-    },
-    Extension {
-        key: "legacy_set_timer",
-        message: "Legacy Set Timer",
-    },
-    Extension {
-        key: "legacy_console_putchar",
-        message: "Legacy Console Put Character",
-    },
-    Extension {
-        key: "legacy_console_getchar",
-        message: "Legacy Console Get Character",
-    },
-    Extension {
-        key: "legacy_clear_ipi",
-        message: "Legacy Clear Inter-processor Interrupt",
-    },
-    Extension {
-        key: "legacy_send_ipi",
-        message: "Legacy Send Inter-processor Interrupt",
-    },
-    Extension {
-        key: "legacy_remote_fence_i",
-        message: "Legacy Remote Instruction Fence",
-    },
-    Extension {
-        key: "legacy_remote_sfence_vma",
-        message: "Legacy Remote Virtual-memory Fence",
-    },
-    Extension {
-        key: "legacy_remote_sfence_vma_asid",
-        message: "Legacy Remote Virtual-memory Fence with ASID",
-    },
-    Extension {
-        key: "legacy_shutdown",
-        message: "Legacy Shutdown",
-    },
+    Extension::new("base", "Base"),
+    Extension::new("time", "Timer"),
+    Extension::new("ipi", "Inter-processor Interrupt"),
+    Extension::new("rfence", "Remote Fence"),
+    Extension::new("hsm", "Hart State Management"),
+    Extension::new("srst", "System Reset"),
+    Extension::new("pmu", "Performance Monitoring Unit"),
+    Extension::new("dbcn", "Debug Console"),
+    Extension::new("susp", "System Suspend"),
+    Extension::new("cppc", "Collab. Processor Perf. Control"),
+    Extension::new("nacl", "Nested Acceleration"),
+    Extension::new("sta", "Steal-time Accounting"),
+    Extension::new("sse", "Supervisor Software Events"),
+    Extension::new("fwft", "Firmware Features"),
+    Extension::new("dbtr", "Debug Triggers"),
+    Extension::new("mpxy", "Message Proxy"),
+    Extension::new("legacy_set_timer", "Legacy Set Timer"),
+    Extension::new("legacy_console_putchar", "Legacy Console Put Character"),
+    Extension::new("legacy_console_getchar", "Legacy Console Get Character"),
+    Extension::new("legacy_clear_ipi", "Legacy Clear Inter-processor Interrupt"),
+    Extension::new("legacy_send_ipi", "Legacy Send Inter-processor Interrupt"),
+    Extension::new("legacy_remote_fence_i", "Legacy Remote Instruction Fence"),
+    Extension::new(
+        "legacy_remote_sfence_vma",
+        "Legacy Remote Virtual-memory Fence",
+    ),
+    Extension::new(
+        "legacy_remote_sfence_vma_asid",
+        "Legacy Remote Virtual-memory Fence with ASID",
+    ),
+    Extension::new("legacy_shutdown", "Legacy Shutdown"),
 ];
 
 pub(crate) fn selected(legacy: bool) -> &'static [Extension] {
