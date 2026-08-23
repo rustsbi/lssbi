@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Preserve 64-bit SBI register values exactly in JSON by encoding XLEN values as
+  hexadecimal strings.
 - Localize CPU selection errors and explain malformed, out-of-range, offline,
   and affinity-restricted values.
 - Distinguish unsupported SBI extensions from failed probes and retain

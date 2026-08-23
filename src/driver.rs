@@ -30,11 +30,11 @@ pub(crate) fn run(legacy: bool, cpu: Option<&str>, json_output: bool) -> Result<
     init_gettext()?;
 
     let cpu = cpu.map(parse_cpu).transpose()?;
-    let information = backend::probe(cpu).map_err(localize_probe_error)?;
+    let info = backend::probe(cpu).map_err(localize_probe_error)?;
     if json_output {
-        json::print(&information, legacy)
+        json::print(&info, legacy)
     } else {
-        print_result(information, legacy);
+        print_result(info, legacy);
         Ok(())
     }
 }
@@ -91,14 +91,14 @@ fn init_gettext() -> Result<(), String> {
     Ok(())
 }
 
-fn print_result(information: backend::SbiInformation, legacy: bool) {
-    let spec_raw = information.spec_version as usize;
+fn print_result(info: backend::SbiInfo, legacy: bool) {
+    let spec_raw = info.spec_version as usize;
     let spec = Version::from_raw(spec_raw);
-    let impl_id = information.impl_id as usize;
-    let impl_version = information.impl_version as usize;
-    let mvendorid = information.mvendorid as usize;
-    let marchid = information.marchid as usize;
-    let mimpid = information.mimpid as usize;
+    let impl_id = info.impl_id as usize;
+    let impl_version = info.impl_version as usize;
+    let mvendorid = info.mvendorid as usize;
+    let marchid = info.marchid as usize;
+    let mimpid = info.mimpid as usize;
 
     let raw = gettext("raw");
     let id = gettext("ID");
@@ -136,9 +136,9 @@ fn print_result(information: backend::SbiInformation, legacy: bool) {
     }
     println!("{}: {mimpid:#x}", gettext("Machine implementation ID"));
 
-    print_extensions(&information.extensions, legacy);
+    print_extensions(&info.extensions, legacy);
     print_vulnerabilities(impl_id, impl_version);
-    print_fwft(&information.fwft);
+    print_fwft(&info.fwft);
 }
 
 fn print_extensions(results: &[backend::SbiCallResult; sbi_ext::EXTENSIONS.len()], legacy: bool) {
@@ -211,23 +211,19 @@ fn print_vulnerabilities(impl_id: usize, impl_version: usize) {
     print_status(&label, &status, 32);
 }
 
-fn print_fwft(information: &backend::FwftInformation) {
+fn print_fwft(info: &backend::FwftInfo) {
     let cpu = gettext("Linux CPU");
     let hart = gettext("SBI hart");
     println!(
         "{} ({cpu} #{}, {hart} #{}):",
         gettext("Firmware Features"),
-        information.cpu,
-        information.hart_id
+        info.cpu,
+        info.hart_id
     );
     let names = fwft::FEATURES.map(|feature| gettext(feature.message));
     let width = status_width(&names);
 
-    for ((name, feature), result) in names
-        .iter()
-        .zip(fwft::FEATURES.iter())
-        .zip(&information.results)
-    {
+    for ((name, feature), result) in names.iter().zip(fwft::FEATURES.iter()).zip(&info.results) {
         let status = if result.error != 0 {
             gettext("Not supported")
         } else {

@@ -123,9 +123,11 @@ Firmware Features (Linux CPU #0, SBI hart #0):
 `--legacy` appends probes for the nine deprecated SBI v0.1 calls.
 
 `--json` emits JSON schema version 1. Its field names and extension/feature keys
-are stable English identifiers and never follow the user's locale. Version and
-machine-identity objects retain the numeric `raw` value, while every extension
-and FWFT probe retains its numeric `error` and `value` fields. The schema has
+are stable English identifiers and never follow the user's locale. XLEN-sized
+raw values, SBI hart IDs, and probe values are lowercase `0x`-prefixed
+hexadecimal strings so 64-bit values remain exact in every JSON implementation.
+Probe `error` fields remain signed JSON numbers. For example, a probe result is
+encoded as `{"error":-4,"value":"0x2"}`. The schema has
 these top-level fields:
 
 - `schema_version`

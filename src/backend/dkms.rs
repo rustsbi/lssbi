@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT OR MulanPSL-2.0
 
-use super::{FwftInformation, ProbeError, SbiCallResult, SbiInformation};
+use super::{FwftInfo, ProbeError, SbiCallResult, SbiInfo};
 use crate::{fwft, sbi_ext};
 use std::fs;
 use std::path::Path;
 
 const PARAMETER_DIRECTORY: &str = "/sys/module/lssbi_probe/parameters";
 
-pub(super) fn probe(cpu: Option<usize>) -> Result<SbiInformation, ProbeError> {
+pub(super) fn probe(cpu: Option<usize>) -> Result<SbiInfo, ProbeError> {
     let directory = Path::new(PARAMETER_DIRECTORY);
     if !directory.is_dir() {
         return Err(ProbeError::ModuleNotLoaded);
     }
 
-    Ok(SbiInformation {
+    Ok(SbiInfo {
         spec_version: read_parameter(directory, "spec_version")?,
         impl_id: read_parameter(directory, "impl_id")?,
         impl_version: read_parameter(directory, "impl_version")?,
@@ -50,7 +50,7 @@ fn read_extensions(
     })
 }
 
-fn read_fwft(directory: &Path, cpu: Option<usize>) -> Result<FwftInformation, ProbeError> {
+fn read_fwft(directory: &Path, cpu: Option<usize>) -> Result<FwftInfo, ProbeError> {
     if let Some(cpu) = cpu {
         select_cpu(cpu)?;
     }
@@ -62,7 +62,7 @@ fn read_fwft(directory: &Path, cpu: Option<usize>) -> Result<FwftInformation, Pr
     })
 }
 
-fn parse_fwft(text: &str) -> Result<FwftInformation, String> {
+fn parse_fwft(text: &str) -> Result<FwftInfo, String> {
     let mut lines = text.lines();
     let cpu = parse_id_record(&mut lines, "cpu")?
         .try_into()
@@ -72,7 +72,7 @@ fn parse_fwft(text: &str) -> Result<FwftInformation, String> {
     let keys = fwft::FEATURES.map(|feature| feature.key);
     let remaining = lines.collect::<Vec<_>>().join("\n");
     let results = parse_records(&remaining, &keys)?;
-    Ok(FwftInformation {
+    Ok(FwftInfo {
         cpu,
         hart_id,
         results,
@@ -191,7 +191,7 @@ mod tests {
     use super::{parse_fwft, parse_parameter, parse_records};
     #[cfg(target_os = "linux")]
     use crate::backend::ProbeError;
-    use crate::backend::{FwftInformation, SbiCallResult};
+    use crate::backend::{FwftInfo, SbiCallResult};
     use crate::{fwft, sbi_ext};
 
     const FWFT_SAMPLE: &str = "\
@@ -222,7 +222,7 @@ pointer_masking_pmlen 0 7
     fn parses_live_fwft_sample() {
         assert_eq!(
             parse_fwft(FWFT_SAMPLE),
-            Ok(FwftInformation {
+            Ok(FwftInfo {
                 cpu: 3,
                 hart_id: 7,
                 results: [

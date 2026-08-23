@@ -4,21 +4,21 @@ mod dkms;
 
 use crate::{fwft, sbi_ext};
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) struct SbiCallResult {
     pub(crate) error: i64,
     pub(crate) value: u64,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) struct FwftInformation {
+pub(crate) struct FwftInfo {
     pub(crate) cpu: u32,
     pub(crate) hart_id: u64,
     pub(crate) results: [SbiCallResult; fwft::FEATURES.len()],
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) struct SbiInformation {
+pub(crate) struct SbiInfo {
     pub(crate) spec_version: u64,
     pub(crate) impl_id: u64,
     pub(crate) impl_version: u64,
@@ -26,7 +26,7 @@ pub(crate) struct SbiInformation {
     pub(crate) marchid: u64,
     pub(crate) mimpid: u64,
     pub(crate) extensions: [SbiCallResult; sbi_ext::EXTENSIONS.len()],
-    pub(crate) fwft: FwftInformation,
+    pub(crate) fwft: FwftInfo,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -38,6 +38,6 @@ pub(crate) enum ProbeError {
     Message(String),
 }
 
-pub(crate) fn probe(cpu: Option<usize>) -> Result<SbiInformation, ProbeError> {
+pub(crate) fn probe(cpu: Option<usize>) -> Result<SbiInfo, ProbeError> {
     dkms::probe(cpu)
 }
