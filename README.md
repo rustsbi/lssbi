@@ -54,8 +54,8 @@ Install DKMS and the headers for the running kernel, then run:
 
 ```sh
 sudo dkms add .
-sudo dkms build lssbi/0.0.0
-sudo dkms install lssbi/0.0.0
+sudo dkms build lssbi/0.0.1
+sudo dkms install lssbi/0.0.1
 sudo modprobe lssbi_probe
 ```
 
@@ -69,7 +69,7 @@ sudo install -Dm644 modules-load.d/lssbi.conf \
 
 DKMS builds `lssbi_probe.ko` for the running kernel and rebuilds it after
 kernel upgrades. Distribution packages should install the module source and
-`dkms.conf` under `/usr/src/lssbi-0.0.0/`; a Debian package would normally
+`dkms.conf` under `/usr/src/lssbi-0.0.1/`; a Debian package would normally
 split the project into `lssbi` and `lssbi-dkms` binary packages.
 
 ## Usage
@@ -243,19 +243,19 @@ as a compatibility fallback.
 ### Refresh the DKMS module
 
 DKMS caches builds by module version. When kernel module output changes without
-a version bump, rebuilding the existing `lssbi/0.0.0` entry may keep the old
+a version bump, rebuilding the existing `lssbi/0.0.1` entry may keep the old
 module. Remove that development entry before rebuilding it:
 
 ```sh
 sudo modprobe -r lssbi_probe
-sudo dkms remove lssbi/0.0.0 --all
+sudo dkms remove lssbi/0.0.1 --all
 sudo dkms add .
-sudo dkms build lssbi/0.0.0
-sudo dkms install lssbi/0.0.0
+sudo dkms build lssbi/0.0.1
+sudo dkms install lssbi/0.0.1
 sudo modprobe lssbi_probe
 ```
 
-After a version bump, replace `0.0.0` with the version in `dkms.conf`. Confirm
+After a version bump, replace `0.0.1` with the version in `dkms.conf`. Confirm
 that the live FWFT parameter uses the current record format before testing the
 command:
 

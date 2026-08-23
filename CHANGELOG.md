@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.1] - 2026-08-23
+
 ### Added
 
 - Add `--json` with a versioned, locale-independent schema that preserves raw
@@ -55,5 +57,6 @@ All notable changes to this project will be documented in this file.
 - Remove the embedded kernel module, setuid installation, and project-owned
   PAM authentication policy.
 
-[Unreleased]: https://github.com/rustsbi/lssbi/compare/v0.0.0...HEAD
+[Unreleased]: https://github.com/rustsbi/lssbi/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/rustsbi/lssbi/compare/v0.0.0...v0.0.1
 [0.0.0]: https://github.com/rustsbi/lssbi/releases/tag/v0.0.0
