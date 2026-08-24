@@ -1,0 +1,35 @@
+.TH LSSBI 1 "August 2026" "lssbi 0.0.1" "User Commands"
+.SH NAME
+lssbi \- inspect the active RISC-V SBI environment
+.SH SYNOPSIS
+.B lssbi
+.RI [ options ]
+.SH DESCRIPTION
+.B lssbi
+reports the SBI specification and implementation versions, machine identifiers,
+supported SBI extensions, and firmware features exposed by the loaded
+.B lssbi_probe
+kernel module.
+.SH OPTIONS
+.TP
+.BI "--cpu " N
+Run per-hart firmware feature queries on Linux CPU
+.IR N .
+.TP
+.B --json
+Print a stable, locale-independent JSON document.
+.TP
+.B --legacy
+Probe deprecated legacy SBI extensions.
+.TP
+.BR -h , " --help"
+Print command help.
+.TP
+.BR -V , " --version"
+Print the lssbi version.
+.SH FILES
+.TP
+.B /sys/module/lssbi_probe/parameters/
+Read-only SBI records exported by the DKMS backend.
+.SH SEE ALSO
+.BR dkms (8)

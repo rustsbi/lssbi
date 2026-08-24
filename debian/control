@@ -1,0 +1,33 @@
+Source: lssbi
+Section: utils
+Maintainer: Zhouqi Jiang <luojia@rustsbi.com>
+Build-Depends:
+ cargo (>= 1.85),
+ debhelper-compat (= 13),
+ dh-sequence-dkms,
+ rustc (>= 1.85),
+Standards-Version: 4.7.3
+Homepage: https://github.com/rustsbi/lssbi
+Vcs-Browser: https://github.com/rustsbi/lssbi
+Vcs-Git: https://github.com/rustsbi/lssbi.git
+
+Package: lssbi
+Architecture: riscv64
+Depends:
+ lssbi-dkms (= ${source:Version}),
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: inspect the active RISC-V SBI environment
+ lssbi reports the SBI specification and implementation versions, machine
+ identifiers, supported SBI extensions, and per-hart firmware features.
+ It also provides stable JSON output for machine-readable reports.
+
+Package: lssbi-dkms
+Architecture: all
+Section: kernel
+Depends: ${misc:Depends}
+Recommends: linux-headers-generic
+Description: kernel probe backend for lssbi
+ This package provides the DKMS source for the lssbi_probe kernel module.
+ The module exposes read-only SBI information to the unprivileged lssbi
+ command and is rebuilt automatically when the kernel changes.

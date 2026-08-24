@@ -1,0 +1,4 @@
+version=4
+opts=filenamemangle=s%(?:.*?)?v?(\d[\d.]*)\.tar\.gz%lssbi-$1.tar.gz% \
+ https://github.com/rustsbi/lssbi/tags \
+ (?:.*?/)?v?(\d[\d.]*)\.tar\.gz

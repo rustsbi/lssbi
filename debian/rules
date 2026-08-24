@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpkg/pkg-info.mk
+
+UPSTREAM_VERSION := $(DEB_VERSION_UPSTREAM)
+CARGO := cargo --config debian/cargo-config.toml
+
+%:
+	dh $@ --buildsystem=none
+
+override_dh_autoreconf override_dh_autoreconf_clean:
+	:
+
+override_dh_clean:
+	dh_clean -Xvendor/
+
+override_dh_auto_build:
+	$(CARGO) build --release --locked --offline
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	$(CARGO) test --all-targets --release --locked --offline
+endif
+
+override_dh_auto_install:
+	PROFILE=release PREFIX=/usr DESTDIR=$(CURDIR)/debian/lssbi ./install.sh
+	install -Dm644 kernel/Kbuild \
+		$(CURDIR)/debian/lssbi-dkms/usr/src/lssbi-$(UPSTREAM_VERSION)/kernel/Kbuild
+	install -Dm644 kernel/lssbi_probe.c \
+		$(CURDIR)/debian/lssbi-dkms/usr/src/lssbi-$(UPSTREAM_VERSION)/kernel/lssbi_probe.c
+	install -Dm644 modules-load.d/lssbi.conf \
+		$(CURDIR)/debian/lssbi-dkms/usr/lib/modules-load.d/lssbi.conf
+
+override_dh_installchangelogs:
+	dh_installchangelogs CHANGELOG.md
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym

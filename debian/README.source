@@ -1,0 +1,7 @@
+The Bianbu archive build must not download Rust crates during compilation.
+Before creating the upstream orig tarball, run:
+
+    cargo vendor --locked --versioned-dirs vendor
+
+Include vendor/ in the orig tarball. The Debian rules use cargo-config.toml to
+build and test against that directory in Cargo's offline mode.
