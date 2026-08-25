@@ -1,3 +1,9 @@
+lssbi (0.0.1-2) experimental; urgency=medium
+
+  * Try to load lssbi_probe immediately after DKMS installation.
+
+ -- Zhouqi Jiang <luojia@rustsbi.com>  Tue, 25 Aug 2026 11:16:47 +0800
+
 lssbi (0.0.1-1) experimental; urgency=medium
 
   * Initial release for Bianbu.

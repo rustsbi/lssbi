@@ -25,7 +25,9 @@ Description: inspect the active RISC-V SBI environment
 Package: lssbi-dkms
 Architecture: all
 Section: kernel
-Depends: ${misc:Depends}
+Depends:
+ kmod,
+ ${misc:Depends},
 Recommends: linux-headers-generic
 Description: kernel probe backend for lssbi
  This package provides the DKMS source for the lssbi_probe kernel module.

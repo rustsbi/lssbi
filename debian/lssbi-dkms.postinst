@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+#DEBHELPER#
+
+if [ "$1" = configure ] && ! modprobe lssbi_probe; then
+	echo "lssbi-dkms: module installed but could not be loaded" >&2
+fi
