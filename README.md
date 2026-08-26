@@ -19,58 +19,26 @@ The command itself is unprivileged and never loads or unloads kernel modules.
 
 [![asciinema recording](https://asciinema.org/a/MJ75h7aVjugDyPkb.svg)](https://asciinema.org/a/MJ75h7aVjugDyPkb)
 
-## Build
+## Install
+
+For Bianbu Linux users, `lssbi` is available from the Bianbu community
+`experimental` repository. With that repository enabled, install it with APT:
 
 ```sh
-git clone https://github.com/rustsbi/lssbi.git
-cd lssbi
-cargo build
-cargo run
+sudo apt update
+sudo apt install lssbi
 ```
 
-Building the command does not require kernel headers. The gettext catalogs are
-compiled into `target/<profile>/locale`.
+APT also installs the `lssbi-dkms` dependency. When matching kernel headers
+are available, DKMS builds and installs the `lssbi_probe` module for the
+running kernel.
 
-## Install the command
+Verify the installation with:
 
 ```sh
-sudo ./install.sh
+lssbi --version
+lssbi
 ```
-
-The defaults are `PREFIX=/usr/local` and `PROFILE=debug`; packagers may also
-set `DESTDIR`. The executable is installed as a normal mode-`0755` program in
-`$PREFIX/bin`.
-
-For a release build:
-
-```sh
-cargo build --release
-sudo PROFILE=release ./install.sh
-```
-
-## Install the DKMS backend
-
-Install DKMS and the headers for the running kernel, then run:
-
-```sh
-sudo dkms add .
-sudo dkms build lssbi/0.0.1
-sudo dkms install lssbi/0.0.1
-sudo modprobe lssbi_probe
-```
-
-To load the module automatically at boot, install the supplied modules-load
-configuration:
-
-```sh
-sudo install -Dm644 modules-load.d/lssbi.conf \
-    /etc/modules-load.d/lssbi.conf
-```
-
-DKMS builds `lssbi_probe.ko` for the running kernel and rebuilds it after
-kernel upgrades. Distribution packages should install the module source and
-`dkms.conf` under `/usr/src/lssbi-0.0.1/`; a Debian package would normally
-split the project into `lssbi` and `lssbi-dkms` binary packages.
 
 ## Usage
 
@@ -150,6 +118,61 @@ suggests `sudo modprobe lssbi_probe`.
 
 Output follows the invoking user's locale. Use `LC_ALL=C lssbi` to force
 English.
+
+## Build and install from source
+
+### Build
+
+```sh
+git clone https://github.com/rustsbi/lssbi.git
+cd lssbi
+cargo build
+cargo run
+```
+
+Building the command does not require kernel headers. The gettext catalogs are
+compiled into `target/<profile>/locale`.
+
+### Install the command
+
+```sh
+sudo ./install.sh
+```
+
+The defaults are `PREFIX=/usr/local` and `PROFILE=debug`; packagers may also
+set `DESTDIR`. The executable is installed as a normal mode-`0755` program in
+`$PREFIX/bin`.
+
+For a release build:
+
+```sh
+cargo build --release
+sudo PROFILE=release ./install.sh
+```
+
+### Install the DKMS backend
+
+Install DKMS and the headers for the running kernel, then run:
+
+```sh
+sudo dkms add .
+sudo dkms build lssbi/0.0.1
+sudo dkms install lssbi/0.0.1
+sudo modprobe lssbi_probe
+```
+
+To load the module automatically at boot, install the supplied modules-load
+configuration:
+
+```sh
+sudo install -Dm644 modules-load.d/lssbi.conf \
+    /etc/modules-load.d/lssbi.conf
+```
+
+DKMS builds `lssbi_probe.ko` for the running kernel and rebuilds it after
+kernel upgrades. Distribution packages should install the module source and
+`dkms.conf` under `/usr/src/lssbi-0.0.1/`; a Debian package would normally
+split the project into `lssbi` and `lssbi-dkms` binary packages.
 
 ## Translation
 
